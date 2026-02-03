@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.thymeleaf.org/extras/spring-security">
+</html>>
 <body>
 <header th:fragment="header" class="sticky top-0 z-50 bg-slate-900 backdrop-blur-lg border-b border-slate-800 py-3">
     <div class="container mx-auto px-4 md:px-6 lg:px-8 flex items-center justify-between h-16 md:h-20">
@@ -17,34 +19,71 @@
         </div>
 
         <!-- NavMenu Desktop -->
-        <nav class="hidden lg:flex items-center gap-8">
-            <ul class="flex space-x-8">
-                <li>
-                    <a href="/" class="relative group text-lg font-medium text-white hover:text-blue-400 transition-colors duration-300">
-                        Inicio
-                        <span class="absolute left-0 bottom-0 h-[2px] w-0 bg-sky-500 transition-all duration-300 group-hover:w-full"></span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/nosotros" class="relative group text-lg font-medium text-white hover:text-blue-400 transition-colors duration-300">
-                        Nosotros
-                        <span class="absolute left-0 bottom-0 h-[2px] w-0 bg-sky-500 transition-all duration-300 group-hover:w-full"></span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="relative group text-lg font-medium text-white hover:text-blue-400 transition-colors duration-300">
-                        Productos
-                        <span class="absolute left-0 bottom-0 h-[2px] w-0 bg-sky-500 transition-all duration-300 group-hover:w-full"></span>
-                    </a>
-                </li>
-                <li>
-                    <a href="/contacto" class="relative group text-lg font-medium text-white hover:text-blue-400 transition-colors duration-300">
-                        Contacto
-                        <span class="absolute left-0 bottom-0 h-[2px] w-0 bg-sky-500 transition-all duration-300 group-hover:w-full"></span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
+<nav class="hidden lg:flex items-center gap-8">
+
+    <ul class="flex space-x-8">
+        <li>
+            <a href="/" class="relative group text-lg font-medium text-white hover:text-blue-400 transition-colors duration-300">
+                Inicio
+                <span class="absolute left-0 bottom-0 h-[2px] w-0 bg-sky-500 transition-all duration-300 group-hover:w-full"></span>
+            </a>
+        </li>
+        <li>
+            <a href="/nosotros" class="relative group text-lg font-medium text-white hover:text-blue-400 transition-colors duration-300">
+                Nosotros
+                <span class="absolute left-0 bottom-0 h-[2px] w-0 bg-sky-500 transition-all duration-300 group-hover:w-full"></span>
+            </a>
+        </li>
+        <li>
+            <a href="#" class="relative group text-lg font-medium text-white hover:text-blue-400 transition-colors duration-300">
+                Productos
+                <span class="absolute left-0 bottom-0 h-[2px] w-0 bg-sky-500 transition-all duration-300 group-hover:w-full"></span>
+            </a>
+        </li>
+        <li>
+            <a href="/contacto" class="relative group text-lg font-medium text-white hover:text-blue-400 transition-colors duration-300">
+                Contacto
+                <span class="absolute left-0 bottom-0 h-[2px] w-0 bg-sky-500 transition-all duration-300 group-hover:w-full"></span>
+            </a>
+        </li>
+    </ul>
+
+    <!-- Botón derecho: Iniciar sesión / Salir -->
+<div class="flex items-center gap-3">
+
+    <!-- Si NO está autenticado -->
+    <a sec:authorize="!isAuthenticated()"
+       href="/login"
+       class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-xl transition-colors duration-300">
+        Iniciar sesión
+    </a>
+
+    <!-- Si está autenticado: admin -->
+    <a sec:authorize="hasRole('ADMIN')"
+       href="/admin/panel"
+       class="border border-slate-600 hover:border-slate-400 text-white font-semibold px-5 py-2 rounded-xl transition-colors duration-300">
+        Admin
+    </a>
+
+    <!-- Si está autenticado: usuario -->
+    <a sec:authorize="hasRole('USUARIO') and !hasRole('ADMIN')"
+       href="/usuario/panel"
+       class="border border-slate-600 hover:border-slate-400 text-white font-semibold px-5 py-2 rounded-xl transition-colors duration-300">
+        Mi Panel
+    </a>
+
+    <!-- Salir -->
+    <form sec:authorize="isAuthenticated()" th:action="@{/logout}" method="post" class="m-0">
+        <button type="submit"
+                class="bg-red-600 hover:bg-red-700 text-white font-semibold px-5 py-2 rounded-xl transition-colors duration-300">
+            Salir
+        </button>
+    </form>
+
+</div>
+
+</nav>
+
 
     </div>
 </header>

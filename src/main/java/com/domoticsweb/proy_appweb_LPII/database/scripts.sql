@@ -80,9 +80,7 @@ CREATE TABLE datos_personales (
     ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
--- =========================================================
--- 4) USUARIOS_ROLES (Muchos a muchos)
--- =========================================================
+-- 4) USUARIOS_ROLES
 CREATE TABLE usuarios_roles (
   idUsuario BIGINT UNSIGNED NOT NULL,
   idRol BIGINT UNSIGNED NOT NULL,
@@ -91,16 +89,17 @@ CREATE TABLE usuarios_roles (
   PRIMARY KEY (idUsuario, idRol),
   KEY ix_usuarios_roles_idRol (idRol),
 
-  CONSTRAINT fk_usuarios_roles_usuario
+  CONSTRAINT fk_ur_usuario
     FOREIGN KEY (idUsuario) REFERENCES usuarios(idUsuario)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
 
-  CONSTRAINT fk_usuarios_roles_rol
+  CONSTRAINT fk_ur_rol
     FOREIGN KEY (idRol) REFERENCES roles(idRol)
     ON DELETE RESTRICT
     ON UPDATE CASCADE
 ) ENGINE=InnoDB;
+
 
 -- =========================================================
 -- DATA INICIAL: ROLES BASE
