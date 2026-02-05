@@ -1,0 +1,150 @@
+{
+    "categories": [
+        {
+            "name": "Camaras y Seguridad",
+            "description": "Cámaras IP, timbres inteligentes y sistemas de vigilancia para el hogar."
+        },
+        {
+            "name": "Focos Inteligentes",
+            "description": "Iluminación LED RGB y blanca controlable por App y asistentes de voz."
+        },
+        {
+            "name": "Asistentes por Voz",
+            "description": "Altavoces y pantallas inteligentes con Alexa, Google Assistant y Siri."
+        },
+        {
+            "name": "Interruptores/Cableado",
+            "description": "Módulos y switches para automatizar luces y tomacorrientes existentes."
+        }
+    ],
+    "products": [
+        {
+            "image": "https://i.postimg.cc/C5skchv7/Captura-de-pantalla-2025-10-13-020851.png",
+            "title": "Cámara de Seguridad Wi-Fi TP-Link Tapo C200",
+            "description": "Cámara rotativa 360° con visión nocturna y audio bidireccional.",
+            "brand": "TP-Link",
+            "price": 199.00,
+            "category": "Camaras y Seguridad"
+        },
+        {
+            "image": "https://i.postimg.cc/tJWhZgXr/Captura-de-pantalla-2025-10-13-153241-removebg-preview.png",
+            "title": "Cámara IP Exterior EZVIZ C3N Full HD 1080p",
+            "description": "Protección exterior con detección de personas mediante IA y visión nocturna en color.",
+            "brand": "EZVIZ",
+            "price": 289.00,
+            "category": "Camaras y Seguridad"
+        },
+        {
+            "image": "https://i.postimg.cc/Y0dG5w06/Captura-de-pantalla-2025-10-13-143135.png",
+            "title": "Cámara Xiaomi Mi Home Security 360° 2K",
+            "description": "Calidad de imagen ultra nítida 2K con seguimiento inteligente de movimiento.",
+            "brand": "Xiaomi",
+            "price": 259.00,
+            "category": "Camaras y Seguridad"
+        },
+        {
+            "image": "https://i.postimg.cc/SsD00y0g/Captura-de-pantalla-2025-10-13-153842.png",
+            "title": "Timbre Inteligente con Cámara Ring Video Doorbell 2",
+            "description": "Contesta la puerta desde cualquier lugar con video HD y alertas de movimiento.",
+            "brand": "Ring",
+            "price": 499.00,
+            "category": "Camaras y Seguridad"
+        },
+        {
+            "image": "https://i.postimg.cc/9Q3nn4R9/Captura-de-pantalla-2025-10-13-153942.png",
+            "title": "Paneles de Luz Triangulares RGBIC Govee (10 unidades)",
+            "description": "Paneles modulares decorativos con efectos de luz dinámicos sincronizados con música.",
+            "brand": "GOVEE",
+            "price": 999.00,
+            "category": "Focos Inteligentes"
+        },
+        {
+            "image": "https://i.postimg.cc/28YW9rjr/Captura-de-pantalla-2025-10-13-153455.png",
+            "title": "Foco Inteligente Govee RGBWW 1200 Lúmenes",
+            "description": "Alta luminosidad con millones de colores y blanco cálido/frío ajustable.",
+            "brand": "Govee",
+            "price": 109.00,
+            "category": "Focos Inteligentes"
+        },
+        {
+            "image": "https://i.postimg.cc/MZgwzpfH/Captura-de-pantalla-2025-10-13-154037.png",
+            "title": "Foco Smart LED W3 Wi-Fi RGB Yeelight",
+            "description": "Fácil configuración sin hub, compatible con los principales ecosistemas domóticos.",
+            "brand": "Yeelight",
+            "price": 89.00,
+            "category": "Focos Inteligentes"
+        },
+        {
+            "image": "https://i.postimg.cc/Vs0yZPZ8/Captura-de-pantalla-2025-10-13-154133.png",
+            "title": "Foco Inteligente Philips Hue White & Color Ambiance",
+            "description": "La mejor calidad de color del mercado con integración profesional Zigbee.",
+            "brand": "Philips",
+            "price": 159.00,
+            "category": "Focos Inteligentes"
+        },
+        {
+            "image": "https://i.postimg.cc/3Jjcz8XY/Captura-de-pantalla-2025-10-13-154221.png",
+            "title": "Amazon Echo Dot (5ta generación)",
+            "description": "El altavoz inteligente más popular con Alexa y mejor calidad de sonido.",
+            "brand": "Amazon",
+            "price": 249.00,
+            "category": "Asistentes por Voz"
+        },
+        {
+            "image": "https://i.postimg.cc/cHYmYhhX/Captura-de-pantalla-2025-10-13-154329.png",
+            "title": "Google Nest Mini (2da generación)",
+            "description": "Asistente de Google compacto con bajos potentes y materiales reciclados.",
+            "brand": "Google",
+            "price": 229.00,
+            "category": "Asistentes por Voz"
+        },
+        {
+            "image": "https://i.postimg.cc/0jV9CY2n/Captura-de-pantalla-2025-10-13-153732.png",
+            "title": "Amazon Echo Show 8 con pantalla táctil",
+            "description": "Pantalla HD de 8 pulgadas para videollamadas, recetas y control de hogar.",
+            "brand": "Amazon",
+            "price": 599.00,
+            "category": "Asistentes por Voz"
+        },
+        {
+            "image": "https://i.postimg.cc/MKV6hSLv/Captura-de-pantalla-2025-10-13-145656.png",
+            "title": "Apple HomePod Mini con Siri",
+            "description": "Sonido de 360 grados y privacidad total dentro del ecosistema Apple.",
+            "brand": "Apple",
+            "price": 449.00,
+            "category": "Asistentes por Voz"
+        },
+        {
+            "image": "https://i.postimg.cc/qvD5wtGs/Captura-de-pantalla-2025-10-13-145929.png",
+            "title": "Interruptor Inteligente Wi-Fi Tuya",
+            "description": "Panel táctil de vidrio templado para control de iluminación desde el celular.",
+            "brand": "Tuya",
+            "price": 79.00,
+            "category": "Interruptores/Cableado"
+        },
+        {
+            "image": "https://i.postimg.cc/CLmPMZXr/Captura-de-pantalla-2025-10-13-150044.png",
+            "title": "Interruptor Smart Sonoff T3 EU 3 Botones",
+            "description": "Interruptor elegante de 3 canales con control remoto RF y Wi-Fi.",
+            "brand": "Sonoff",
+            "price": 99.00,
+            "category": "Interruptores/Cableado"
+        },
+        {
+            "image": "https://i.postimg.cc/nLtQ62Tc/Captura-de-pantalla-2025-10-13-150215.png",
+            "title": "Módulo de Control Shelly 1PM Wi-Fi",
+            "description": "Módulo pequeño para instalar tras interruptores físicos con medición de energía.",
+            "brand": "Shelly",
+            "price": 129.00,
+            "category": "Interruptores/Cableado"
+        },
+        {
+            "image": "https://i.postimg.cc/8PMvwxBX/Captura-de-pantalla-2025-10-13-150331.png",
+            "title": "Interruptor Inteligente BroadLink TC2-US",
+            "description": "Interruptor táctil con tecnología de largo alcance, requiere hub Broadlink.",
+            "brand": "BroadLink",
+            "price": 89.00,
+            "category": "Interruptores/Cableado"
+        }
+    ]
+}

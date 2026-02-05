@@ -122,3 +122,99 @@ SELECT u.idUsuario, r.idRol
 FROM usuarios u
 JOIN roles r ON r.nombre = 'ADMIN'
 WHERE u.correo = 'admin@demo.com';
+
+-- =========================================================
+-- 5) CATEGORIAS
+-- =========================================================
+CREATE TABLE categorias (
+  idCategoria BIGINT NOT NULL AUTO_INCREMENT,
+  nombre VARCHAR(80) NOT NULL,
+  descripcion VARCHAR(200) NULL,
+  activo TINYINT(1) NOT NULL DEFAULT 1,
+  fechaCreacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  fechaActualizacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  PRIMARY KEY (idCategoria),
+  UNIQUE KEY uk_categorias_nombre (nombre)
+) ENGINE=InnoDB;
+
+
+-- =========================================================
+-- 6) PRODUCTOS
+-- =========================================================
+CREATE TABLE productos (
+  idProducto BIGINT NOT NULL AUTO_INCREMENT,
+  nombre VARCHAR(120) NOT NULL,
+  marca VARCHAR (50),
+  descripcion TEXT NULL,
+  precio DECIMAL(10,2) NOT NULL,
+
+  idCategoria BIGINT NOT NULL,
+
+  activo TINYINT(1) NOT NULL DEFAULT 1,
+  fechaCreacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  fechaActualizacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  PRIMARY KEY (idProducto),
+  KEY ix_productos_categoria (idCategoria),
+
+  CONSTRAINT chk_productos_precio
+    CHECK (precio >= 0),
+
+  CONSTRAINT fk_productos_categoria
+    FOREIGN KEY (idCategoria) REFERENCES categorias(idCategoria)
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+
+
+-- =========================================================
+-- 7) INVENTARIO
+-- =========================================================
+CREATE TABLE inventario (
+  idInventario BIGINT NOT NULL AUTO_INCREMENT,
+  idProducto BIGINT NOT NULL,
+
+  stock INT NOT NULL DEFAULT 0,
+  stockMinimo INT NOT NULL DEFAULT 0,
+
+  fechaActualizacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  PRIMARY KEY (idInventario),
+  UNIQUE KEY uk_inventario_producto (idProducto),
+
+  CONSTRAINT chk_inventario_stock
+    CHECK (stock >= 0),
+
+  CONSTRAINT chk_inventario_stockMinimo
+    CHECK (stockMinimo >= 0),
+
+  CONSTRAINT fk_inventario_producto
+    FOREIGN KEY (idProducto) REFERENCES productos(idProducto)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+
+-- =========================================================
+-- 8) PRODUCTOS_IMAGENES
+-- =========================================================
+CREATE TABLE producto_imagenes (
+  idImagen BIGINT NOT NULL AUTO_INCREMENT,
+  idProducto BIGINT NOT NULL,
+
+  urlImagen VARCHAR(500) NOT NULL,
+  orden INT NOT NULL DEFAULT 1,
+  activo TINYINT(1) NOT NULL DEFAULT 1,
+
+  fechaCreacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+  PRIMARY KEY (idImagen),
+  KEY ix_imagenes_producto (idProducto),
+
+  CONSTRAINT fk_imagenes_producto
+    FOREIGN KEY (idProducto) REFERENCES productos(idProducto)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+) ENGINE=InnoDB;
