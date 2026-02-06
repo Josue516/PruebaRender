@@ -26,9 +26,7 @@ public class InventarioService {
         return inventarioRepository.findAll();
     }
 
-    // =========================
     // Buscar inventario por ID
-    // =========================
     @Transactional(readOnly = true)
     public Inventario buscarPorId(Long id) {
         return inventarioRepository.findById(id)

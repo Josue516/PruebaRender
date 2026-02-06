@@ -1,11 +1,18 @@
 package com.domoticsweb.proy_appweb_LPII.controllers;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.domoticsweb.proy_appweb_LPII.database.entities.Producto;
 import com.domoticsweb.proy_appweb_LPII.database.repositories.CategoriaRepository;
@@ -55,4 +62,18 @@ public class PagesController {
 
         return "pages/productos";
     }
+	
+	@GetMapping("/api/sesion/estado")
+	@ResponseBody
+	public ResponseEntity<Map<String, Object>> verificarSesion(HttpServletRequest request) {
+	    Map<String, Object> respuesta = new HashMap<>();
+	    
+	    // Verificamos si hay un usuario autenticado en el contexto de Spring Security
+	    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+	    boolean estaLogueado = auth != null && auth.isAuthenticated() && 
+	                          !(auth instanceof AnonymousAuthenticationToken);
+
+	    respuesta.put("logueado", estaLogueado);
+	    return ResponseEntity.ok(respuesta);
+	}
 }
