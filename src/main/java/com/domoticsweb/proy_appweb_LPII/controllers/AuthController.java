@@ -11,11 +11,6 @@ public class AuthController {
         return "auth/login";
     }
 
-    @GetMapping("/admin/panel")
-    public String panelAdmin() {
-        return "admin/panel";
-    }
-
     @GetMapping("/usuario/panel")
     public String panelUsuario() {
         return "usuario/panel";
