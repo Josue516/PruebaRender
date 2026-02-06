@@ -21,26 +21,20 @@ public class ProductoService {
     private final CategoriaService categoriaService;
     private final InventarioService inventarioService;
 
-    // =========================
     // Listar productos
-    // =========================
     @Transactional(readOnly = true)
     public List<Producto> listarTodos() {
         return productoRepository.findAll();
     }
 
-    // =========================
     // Buscar por ID
-    // =========================
     @Transactional(readOnly = true)
     public Producto buscarPorId(Long id) {
         return productoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
     }
 
-    // =========================
     // Crear producto completo
-    // =========================
     public Producto crearProducto(Producto producto, Integer stockInicial, Integer stockMinimo) {
 
         // Validar categoría existente
@@ -59,9 +53,7 @@ public class ProductoService {
         return productoGuardado;
     }
 
-    // =========================
     // Agregar imágenes
-    // =========================
     public Producto agregarImagenes(Long idProducto, Set<ProductoImagen> imagenes) {
 
         Producto producto = buscarPorId(idProducto);
@@ -73,9 +65,7 @@ public class ProductoService {
         return productoRepository.save(producto);
     }
 
-    // =========================
     // Actualizar producto
-    // =========================
     public Producto actualizarProducto(Long id, Producto productoActualizado) {
 
         Producto producto = buscarPorId(id);
@@ -88,9 +78,7 @@ public class ProductoService {
         return productoRepository.save(producto);
     }
 
-    // =========================
     // Eliminación lógica
-    // =========================
     public void desactivarProducto(Long id) {
 
         Producto producto = buscarPorId(id);

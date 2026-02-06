@@ -26,6 +26,7 @@ public class SecurityConfig {
 
         http
             .authorizeHttpRequests(auth -> auth
+            	.requestMatchers("/api/sesion/estado").permitAll()
                 .requestMatchers("/", "/nosotros", "/contacto", "/productos", "/login", "/registro",
                         "/images/**", "/css/**", "/js/**").permitAll()
 
@@ -42,11 +43,15 @@ public class SecurityConfig {
                 .successHandler(authSuccessHandler)
                 .failureUrl("/login?error=true")
                 .permitAll()
+                .defaultSuccessUrl("/productos", true)
             )
             .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/")
-            );
+            )
+            .csrf(csrf -> csrf
+        	    .ignoringRequestMatchers("/api/ventas/finalizar")
+        	);
 
         return http.build();
     }

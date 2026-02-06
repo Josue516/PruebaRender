@@ -1,8 +1,3 @@
-// ====================================
-// PRODUCTOS.JS - VERSIÓN OPTIMIZADA CON DATA-ID
-// ====================================
-
-// --- CACHE DE ELEMENTOS DOM ---
 const DOM = {
     menuCategorias: null,
     iconToggle: null,
@@ -58,7 +53,7 @@ function throttle(func, limit) {
     };
 }
 
-// --- NAVEGACIÓN Y FILTROS ---
+// NAVEGACIÓN Y FILTROS 
 function toggleMenu() {
     if (!DOM.menuCategorias || !DOM.iconToggle || !DOM.btnToggle) return;
 
@@ -440,7 +435,6 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// --- INICIALIZACIÓN ---
 document.addEventListener('DOMContentLoaded', () => {
     DOM.init();
     actualizarContadores();
@@ -461,3 +455,65 @@ document.addEventListener('DOMContentLoaded', () => {
     
     console.log('✓ Sistema optimizado cargado');
 });
+async function verificarSesionYFinalizar() {
+    // Verificar si el carrito tiene productos
+    if (carrito.length === 0) {
+        alert("Tu carrito está vacío.");
+        return;
+    }
+
+    try {
+        // Consultar al servidor si el usuario tiene sesión activa
+        const response = await fetch('/api/sesion/estado');
+        const data = await response.json();
+
+        if (data.logueado) {
+            // EL USUARIO ESTÁ LOGUEADO -> Proceder a la compra
+            finalizarCompra(); 
+        } else {
+            // EL USUARIO NO ESTÁ LOGUEADO -> Guardar intención y redirigir
+            if(confirm("Debes iniciar sesión para finalizar tu compra. ¿Deseas ir al login?")) {
+                window.location.href = "/login";
+            }
+        }
+    } catch (error) {
+        console.error("Error al verificar sesión:", error);
+    }
+}
+
+async function finalizarCompra() {
+    // Formateamos los datos para el DTO de Java
+    const datosCompra = {
+        items: carrito.map(item => ({
+            id: item.id,
+            cantidad: item.cantidad,
+            precio: item.precio
+        }))
+    };
+
+    try {
+        const response = await fetch('/api/ventas/finalizar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                // Importante: Si usas Spring Security, podrías necesitar el token CSRF aquí, POR SUERTE NO SE NECESITO XD
+            },
+            body: JSON.stringify(datosCompra)
+        });
+
+        const resultado = await response.json();
+
+        if (response.ok) {
+            alert("¡Compra realizada con éxito! Nro de Pedido: " + resultado.idVenta);
+            // Limpiamos el carrito y redirigimos
+            carrito = [];
+            localStorage.removeItem('carrito');
+            window.location.href = "/usuario/panel"; // O la página que prefieras
+        } else {
+            alert("Error: " + resultado.error);
+        }
+    } catch (error) {
+        console.error("Error en la petición:", error);
+        alert("Hubo un problema al conectar con el servidor.");
+    }
+}
