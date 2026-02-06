@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/layout :: layout}">
+<div th:fragment="content" class="min-h-screen bg-slate-100">
+  <div class="max-w-7xl mx-auto px-4 md:px-6 py-8">
+    <div class="bg-white rounded-2xl shadow-sm p-6">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h1 class="text-3xl font-bold text-slate-900">Categorías</h1>
+          <p class="text-slate-600 mt-1">Organiza tus productos por categorías.</p>
+        </div>
+        <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-xl">
+          + Nueva categoría
+        </button>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="min-w-full border border-slate-200 rounded-xl overflow-hidden">
+          <thead class="bg-slate-50">
+          <tr class="text-left text-slate-700">
+            <th class="px-4 py-3 border-b">ID</th>
+            <th class="px-4 py-3 border-b">Nombre</th>
+            <th class="px-4 py-3 border-b">Descripción</th>
+            <th class="px-4 py-3 border-b">Estado</th>
+            <th class="px-4 py-3 border-b">Acciones</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr class="hover:bg-slate-50">
+            <td class="px-4 py-3 border-b">1</td>
+            <td class="px-4 py-3 border-b">Cámaras</td>
+            <td class="px-4 py-3 border-b">Cámaras de seguridad</td>
+            <td class="px-4 py-3 border-b">
+              <span class="px-2 py-1 rounded-lg text-xs font-semibold bg-green-100 text-green-700">Activo</span>
+            </td>
+            <td class="px-4 py-3 border-b space-x-2">
+              <button class="px-3 py-1 rounded-lg border border-slate-300">Editar</button>
+              <button class="px-3 py-1 rounded-lg bg-red-600 text-white">Eliminar</button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</html>
