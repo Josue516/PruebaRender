@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import com.domoticsweb.proy_appweb_LPII.database.entities.Producto;
 import com.domoticsweb.proy_appweb_LPII.database.entities.ProductoImagen;
 import com.domoticsweb.proy_appweb_LPII.database.repositories.ProductoRepository;
+import com.domoticsweb.proy_appweb_LPII.dto.CarritoDTO;
+import com.domoticsweb.proy_appweb_LPII.dto.VentaDTO;
 
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -20,11 +22,10 @@ public class ProductoService {
     private final ProductoRepository productoRepository;
     private final CategoriaService categoriaService;
     private final InventarioService inventarioService;
-
     // Listar productos
     @Transactional(readOnly = true)
     public List<Producto> listarTodos() {
-        return productoRepository.findAll();
+    	return productoRepository.findByActivoTrue();
     }
 
     // Buscar por ID
@@ -86,5 +87,23 @@ public class ProductoService {
 
         productoRepository.save(producto);
     }
+    // Listar por categoría
+    @Transactional(readOnly = true)
+    public List<Producto> listarPorCategoria(Long idCategoria) {
+    	return productoRepository.findByCategoria_IdCategoriaAndActivoTrue(idCategoria);
+    }
 
+    // Buscar por nombre
+    @Transactional(readOnly = true)
+    public List<Producto> buscarPorNombre(String nombre) {
+        return productoRepository.findByNombreContainingIgnoreCase(nombre);
+    }
+    //PARA REDUCIR STOCK DE INVENTARIO
+    @Transactional
+    public void procesarVenta(VentaDTO venta) {
+        for (CarritoDTO item : venta.getItems()) {
+            inventarioService.reducirStock(item.getId(), item.getCantidad());
+        }
+        System.out.println("Venta procesada y stock actualizado mediante InventarioService");
+    }
 }

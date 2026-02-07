@@ -7,6 +7,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 @Configuration
 public class SecurityConfig {
 
@@ -26,7 +28,9 @@ public class SecurityConfig {
 
         http
             .authorizeHttpRequests(auth -> auth
+            	.requestMatchers("/api/productos/**").permitAll()
             	.requestMatchers("/api/sesion/estado").permitAll()
+            	.requestMatchers("/api/pedidos/confirmar").permitAll()
                 .requestMatchers("/", "/nosotros", "/contacto", "/productos", "/login", "/registro",
                         "/images/**", "/css/**", "/js/**").permitAll()
 
@@ -50,8 +54,19 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/")
             )
             .csrf(csrf -> csrf
-        	    .ignoringRequestMatchers("/api/ventas/finalizar")
-        	);
+            	    .ignoringRequestMatchers("/api/ventas/finalizar", "/api/pedidos/confirmar")
+            	)
+            .exceptionHandling(e -> e
+                    .authenticationEntryPoint((request, response, authException) -> {
+                        // Si la petición es AJAX / Fetch, devolvemos 401 en vez de redirigir
+                        if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With")) || 
+                            request.getHeader("Accept").contains("application/json")) {
+                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                        } else {
+                            response.sendRedirect("/login");
+                        }
+                    })
+                );;
 
         return http.build();
     }

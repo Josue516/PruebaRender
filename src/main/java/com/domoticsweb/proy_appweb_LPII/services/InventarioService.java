@@ -67,21 +67,29 @@ public class InventarioService {
 
     // Aumentar stock
     public Inventario aumentarStock(Long idProducto, Integer cantidad) {
-
         if (cantidad <= 0) {
             throw new RuntimeException("La cantidad debe ser mayor a cero");
         }
 
         Inventario inventario = buscarPorProducto(idProducto);
+        int stockAnterior = inventario.getStock();
+        inventario.setStock(stockAnterior + cantidad);
 
-        inventario.setStock(inventario.getStock() + cantidad);
+        // Lógica de Reactivación:
+        // Si antes no había nada y ahora sí, ponemos el producto como activo
+        if (stockAnterior == 0 && inventario.getStock() > 0) {
+            Producto producto = inventario.getProducto();
+            if (!producto.getActivo()) { // Solo si estaba desactivado
+                producto.setActivo(true);
+                productoRepository.save(producto);
+            }
+        }
 
         return inventarioRepository.save(inventario);
     }
 
     // Reducir stock
     public Inventario reducirStock(Long idProducto, Integer cantidad) {
-
         if (cantidad <= 0) {
             throw new RuntimeException("La cantidad debe ser mayor a cero");
         }
@@ -93,6 +101,13 @@ public class InventarioService {
         }
 
         inventario.setStock(inventario.getStock() - cantidad);
+
+        // Lógica de Desactivación Automática:
+        if (inventario.getStock() == 0) {
+            Producto producto = inventario.getProducto();
+            producto.setActivo(false);
+            productoRepository.save(producto);
+        }
 
         return inventarioRepository.save(inventario);
     }
@@ -110,5 +125,4 @@ public class InventarioService {
 
         return inventarioRepository.save(inventario);
     }
-
 }

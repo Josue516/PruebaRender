@@ -6,4 +6,5 @@ import java.util.List;
 @Data
 public class VentaDTO {
     private List<CarritoDTO> items;
+    private String orderId;
 }
