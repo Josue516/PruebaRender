@@ -1,5 +1,9 @@
 package com.domoticsweb.proy_appweb_LPII.database.entities;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,4 +30,8 @@ public class Categoria {
     @Builder.Default
     @Column(name = "activo", nullable = false)
     private Boolean activo = true;
+    
+    @OneToMany(mappedBy = "categoria")
+    @JsonManagedReference
+    private List<Producto> productos;
 }

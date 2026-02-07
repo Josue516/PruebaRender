@@ -1,5 +1,7 @@
 package com.domoticsweb.proy_appweb_LPII.database.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 import lombok.Builder;
 
@@ -36,5 +38,6 @@ public class Inventario {
 
     @OneToOne
     @JoinColumn(name = "idProducto", nullable = false, unique = true)
+    @JsonBackReference
     private Producto producto;
 }

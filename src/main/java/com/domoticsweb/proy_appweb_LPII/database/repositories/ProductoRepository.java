@@ -9,11 +9,18 @@ import com.domoticsweb.proy_appweb_LPII.database.entities.Producto;
 
 @Repository
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
-	List<Producto> findByActivoTrue();  //Productos disponibles
-
-    List<Producto> findByCategoria_IdCategoria(Long idCategoria); //Lista productos por categoria
-
-    List<Producto> findByNombreContainingIgnoreCase(String nombre); //Buscador para tienda
     
+    // Carga inicial de la tienda si esta activo
+    List<Producto> findByActivoTrue();  
+
+    // Filtro por categoría desde el Sidebar 
+    List<Producto> findByCategoria_IdCategoriaAndActivoTrue(Long idCategoria); 
+
     boolean existsByNombre(String nombre);
+    // PANEL ADMINISTRADOR 
+    // Para el Panel de Administración (Opcional si quieres ver inactivos)
+    List<Producto> findByCategoria_IdCategoria(Long idCategoria);
+    // El administrador necesita buscar por nombre incluso productos inactivos
+    List<Producto> findByNombreContainingIgnoreCase(String nombre); 
+    
 }

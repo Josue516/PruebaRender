@@ -1,6 +1,8 @@
 package com.domoticsweb.proy_appweb_LPII.controllers;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +18,7 @@ import com.domoticsweb.proy_appweb_LPII.database.repositories.UsuarioRepository;
 import com.domoticsweb.proy_appweb_LPII.database.repositories.VentaRepository;
 import com.domoticsweb.proy_appweb_LPII.dto.CarritoDTO;
 import com.domoticsweb.proy_appweb_LPII.dto.VentaDTO;
+import com.domoticsweb.proy_appweb_LPII.services.PaypalService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,11 +34,18 @@ public class VentaController {
     private final DetalleVentaRepository detalleVentaRepository;
     private final ProductoRepository productoRepository;
     private final UsuarioRepository usuarioRepository;
+    
+    private final PaypalService payPalService; 
 
     @PostMapping("/finalizar")
     @Transactional
     public ResponseEntity<?> finalizarCompra(@RequestBody VentaDTO compra, Authentication auth) {
         try {
+            // PARA VERIFICAR PAGO DE PAYPAL
+            if (!payPalService.verificarPago(compra.getOrderId())) {
+                return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED)
+                        .body(Map.of("error", "El pago no fue verificado"));
+            }
             // 1. Identificar al usuario
             Usuario usuario = usuarioRepository.findByNombreUsuarioIgnoreCase(auth.getName())
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + auth.getName()));
@@ -83,5 +93,14 @@ public class VentaController {
             return ResponseEntity.internalServerError()
                     .body(Map.of("error", e.getMessage()));
         }
+    }
+    @GetMapping("/check-auth")
+    public ResponseEntity<?> checkAuth(Authentication auth) {
+        // Si auth es null o no está autenticado, Spring Security suele manejarlo,
+        // pero aquí confirmamos explícitamente.
+        if (auth != null && auth.isAuthenticated()) {
+            return ResponseEntity.ok(Map.of("autenticado", true));
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }
