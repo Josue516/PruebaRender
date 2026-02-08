@@ -1,11 +1,57 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/layout :: layout}">
 <div th:fragment="content" class="container mx-auto px-6 py-12">
-  <h1 class="text-3xl font-bold">Panel Usuario</h1>
-  <p class="mt-2 text-slate-600">Bienvenido. Aquí irán tus opciones.</p>
+  
+  
+  <!-- Welcome Section -->
+  <section class="mb-8">
+  	<div class="rounded-lg shadow-md shadow-sky-200 p-6 border border-sky-200">
+		<h2 class="text-3xl font-bold">Bienvenido, <span th:text="${user.nombreUsuario}">Usuario</span>!</h2>
+  		<p class="mt-2 text-slate-600">Accede a tu perfil, visualiza tus pedidos y gestiona tu cuenta en un solo lugar.</p>
+  	</div>
+  </section>
+  
+    <!-- Tabs -->
+  <div class="w-full">
 
+    <!-- Tabs List -->
+	<div class="grid grid-cols-2 bg-blue-100 p-1 rounded-lg mb-6">
+	  <button
+	    id="btn-perfil"
+	    type="button"
+	    data-tab="perfil"
+	    onclick="changeTab('perfil')">
+	    👤 Ver Perfil
+	  </button>
+	
+	  <button
+	    id="btn-pedidos"
+	    type="button"
+	    data-tab="pedidos"
+	    onclick="changeTab('pedidos')">
+	    📦 Mis Pedidos
+	  </button>
+	</div>
+	
+	<!-- Contenidos -->
+	<div id="perfil" class="tab-content">
+	  <!-- Perfil -->
+	  <div th:replace="usuario/components/profile :: profile"></div>
+	</div>
+	
+	<div id="pedidos" class="tab-content" hidden>
+		<!-- Pedidos -->>
+	  <div th:replace="usuario/components/pedidos :: pedidos"></div>
+	</div>
+
+
+  </div>
+  
+  
+  
   <form th:action="@{/logout}" method="post" class="mt-6">
     <button class="bg-slate-900 text-white px-4 py-2 rounded-lg">Cerrar sesión</button>
   </form>
 </div>
+
 </html>

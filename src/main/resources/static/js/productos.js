@@ -456,7 +456,7 @@ function renderizarBotonPaypal() {
 }
 
 function finalizarVentaBackend(orderId) {
-    fetch('/api/pedidos/confirmar', { 
+    fetch('/api/ventas/finalizar', { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -469,25 +469,17 @@ function finalizarVentaBackend(orderId) {
         })
     })
 	.then(async response => {
-	    const texto = await response.text();
-	    
-	    if (!response.ok) {
-	        // Intentar parsear como JSON para extraer el mensaje de error
-	        let mensajeError = texto;
-	        try {
-	            const errorJson = JSON.parse(texto);
-	            // Extraer el mensaje del objeto JSON
-	            mensajeError = errorJson.error || errorJson.mensaje || errorJson.message || texto;
-	        } catch (e) {
-	            // Si no es JSON válido, usar el texto tal cual
-	            mensajeError = texto;
-	        }
-	        throw new Error(mensajeError);
-	    }
-	    
-	    return texto;
+		const data = await response.json();
+
+		   if (!response.ok) {
+		       throw new Error(
+		           data.error || data.mensaje || 'Error al procesar la venta'
+		       );
+		   }
+
+		   return data;
 	})
-    .then(mensajeServidor => {
+    .then(data => {
         // --- 1. LIMPIEZA ---
         carrito = [];
         localStorage.removeItem('carrito');
@@ -497,7 +489,7 @@ function finalizarVentaBackend(orderId) {
         // --- 2. NOTIFICACIÓN CON BOTÓN ---
         // Reemplazamos el alert/toast simple por la versión con botón de acción
         mostrarNotificacion(
-            mensajeServidor, 
+            data.mensaje, 
             '/usuario/panel', 
             'Ver mis pedidos'
         );
