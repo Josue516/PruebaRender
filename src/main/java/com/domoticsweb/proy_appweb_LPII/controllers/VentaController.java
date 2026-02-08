@@ -46,11 +46,11 @@ public class VentaController {
                 return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED)
                         .body(Map.of("error", "El pago no fue verificado"));
             }
-            // 1. Identificar al usuario
+            // Identificar al usuario
             Usuario usuario = usuarioRepository.findByNombreUsuarioIgnoreCase(auth.getName())
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + auth.getName()));
 
-            // 2. Crear cabecera de la Venta
+            // Crear cabecera de la Venta
             Venta venta = new Venta();
             venta.setUsuario(usuario);
             venta.setFechaVenta(LocalDateTime.now());

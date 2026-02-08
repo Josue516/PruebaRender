@@ -488,21 +488,22 @@ function finalizarVentaBackend(orderId) {
 
         // --- 2. NOTIFICACIÓN CON BOTÓN ---
         // Reemplazamos el alert/toast simple por la versión con botón de acción
-        mostrarNotificacion(
-            data.mensaje, 
-            '/usuario/panel', 
-            'Ver mis pedidos'
-        );
+		const urlPedidos = new URL('/usuario/panel', window.location.origin);
+		urlPedidos.searchParams.set('tab', 'pedidos');
+
+		mostrarNotificacion(
+		    data.mensaje,
+		    urlPedidos.toString(),
+		    'Ver mis pedidos'
+		);
 
         // --- 3. REDIRECCIÓN DE SEGURIDAD (OPCIONAL) ---
         // Si el usuario no hace clic, lo llevamos suavemente a la tienda tras 8 segundos
-        console.log("El usuario ahora puede elegir ir a su panel o seguir navegando.");
-        setTimeout(() => {
-            // Solo redirigimos si el usuario no se ha movido ya de página
-            if (window.location.pathname.includes('/productos')) {
-                window.location.href = '/productos'; 
-            }
-        }, 8000);
+		setTimeout(() => {
+		    if (window.location.pathname.includes('/productos')) {
+		        window.location.href = '/usuario/panel?tab=pedidos';
+		    }
+		}, 8000);
     })
 	.catch(err => {
 	    console.error("Error:", err);

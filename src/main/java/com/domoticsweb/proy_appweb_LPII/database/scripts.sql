@@ -1,4 +1,3 @@
-
 DROP DATABASE IF EXISTS `Domotics_DB`;
 
 -- 2) Crear base de datos nuevamente
@@ -12,7 +11,7 @@ USE `Domotics DB`;
 -- 1) ROLES
 -- =========================================================
 CREATE TABLE roles (
-  idRol BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  idRol BIGINT NOT NULL AUTO_INCREMENT,
   nombre VARCHAR(50) NOT NULL,
   descripcion VARCHAR(200) NULL,
   activo TINYINT(1) NOT NULL DEFAULT 1,
@@ -26,7 +25,7 @@ CREATE TABLE roles (
 -- 2) USUARIOS (Login)
 -- =========================================================
 CREATE TABLE usuarios (
-  idUsuario BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  idUsuario BIGINT NOT NULL AUTO_INCREMENT,
 
   nombreUsuario VARCHAR(50) NULL,
   correo VARCHAR(120) NOT NULL,
@@ -51,7 +50,7 @@ CREATE TABLE usuarios (
 -- 3) DATOS PERSONALES (Perfil)
 -- =========================================================
 CREATE TABLE datos_personales (
-  idUsuario BIGINT UNSIGNED NOT NULL,
+  idUsuario BIGINT NOT NULL,
 
   nombres VARCHAR(80) NOT NULL,
   apellidos VARCHAR(80) NOT NULL,
@@ -82,8 +81,8 @@ CREATE TABLE datos_personales (
 
 -- 4) USUARIOS_ROLES
 CREATE TABLE usuarios_roles (
-  idUsuario BIGINT UNSIGNED NOT NULL,
-  idRol BIGINT UNSIGNED NOT NULL,
+  idUsuario BIGINT NOT NULL,
+  idRol BIGINT NOT NULL,
   fechaAsignacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
   PRIMARY KEY (idUsuario, idRol),
@@ -99,7 +98,6 @@ CREATE TABLE usuarios_roles (
     ON DELETE RESTRICT
     ON UPDATE CASCADE
 ) ENGINE=InnoDB;
-
 
 -- =========================================================
 -- DATA INICIAL: ROLES BASE
@@ -138,7 +136,6 @@ CREATE TABLE categorias (
   UNIQUE KEY uk_categorias_nombre (nombre)
 ) ENGINE=InnoDB;
 
-
 -- =========================================================
 -- 6) PRODUCTOS
 -- =========================================================
@@ -167,8 +164,6 @@ CREATE TABLE productos (
     ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
-
-
 -- =========================================================
 -- 7) INVENTARIO
 -- =========================================================
@@ -184,18 +179,14 @@ CREATE TABLE inventario (
   PRIMARY KEY (idInventario),
   UNIQUE KEY uk_inventario_producto (idProducto),
 
-  CONSTRAINT chk_inventario_stock
-    CHECK (stock >= 0),
-
-  CONSTRAINT chk_inventario_stockMinimo
-    CHECK (stockMinimo >= 0),
+  CONSTRAINT chk_inventario_stock CHECK (stock >= 0),
+  CONSTRAINT chk_inventario_stockMinimo CHECK (stockMinimo >= 0),
 
   CONSTRAINT fk_inventario_producto
     FOREIGN KEY (idProducto) REFERENCES productos(idProducto)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 ) ENGINE=InnoDB;
-
 
 -- =========================================================
 -- 8) PRODUCTOS_IMAGENES

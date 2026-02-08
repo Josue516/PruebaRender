@@ -1,46 +1,45 @@
-const perfilContent = document.getElementById('perfil');
-const pedidosContent = document.getElementById('pedidos');
+document.addEventListener("DOMContentLoaded", () => {
 
-const btnPerfil = document.getElementById('btn-perfil');
-const btnPedidos = document.getElementById('btn-pedidos');
+  const container = document.querySelector("[data-tab]");
+  const defaultTab = container?.dataset.tab || "perfil";
 
-function resetButtonStyles(button) {
-  button.style.background = 'transparent';
-  button.style.color = '#1e3a8a';
-  button.style.boxShadow = 'none';
-}
+  const buttons = document.querySelectorAll(".tab-btn");
+  const contents = document.querySelectorAll(".tab-content");
 
-function setActiveButtonStyles(button) {
-  button.style.background = 'white';
-  button.style.color = '#2563eb';
-  button.style.boxShadow = '0 4px 10px rgba(0,0,0,0.1)';
-}
-
-// Inicializa estado inicial
-function initTabs() {
-  perfilContent.hidden = false;
-  pedidosContent.hidden = true;
-
-  setActiveButtonStyles(btnPerfil);
-  resetButtonStyles(btnPedidos);
-}
-
-// Cambiar pestañas
-function changeTab(tabId) {
-  if (tabId === 'perfil') {
-    perfilContent.hidden = false;
-    pedidosContent.hidden = true;
-
-    setActiveButtonStyles(btnPerfil);
-    resetButtonStyles(btnPedidos);
-  } else if (tabId === 'pedidos') {
-    perfilContent.hidden = true;
-    pedidosContent.hidden = false;
-
-    resetButtonStyles(btnPerfil);
-    setActiveButtonStyles(btnPedidos);
+  function setActiveStyles(button) {
+    button.classList.add("bg-white", "text-blue-600", "shadow-md");
+    button.classList.remove("text-blue-900");
   }
-}
 
-// Ejecutar inicialización al cargar la página
-window.onload = initTabs;
+  function setInactiveStyles(button) {
+    button.classList.remove("bg-white", "text-blue-600", "shadow-md");
+    button.classList.add("text-blue-900");
+  }
+
+  function changeTab(tabId) {
+
+    contents.forEach(content => {
+      content.hidden = true;
+    });
+
+    const activeContent = document.getElementById(tabId);
+    if (activeContent) activeContent.hidden = false;
+
+    buttons.forEach(btn => {
+      if (btn.dataset.tab === tabId) {
+        setActiveStyles(btn);
+      } else {
+        setInactiveStyles(btn);
+      }
+    });
+  }
+
+  buttons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      changeTab(btn.dataset.tab);
+    });
+  });
+
+  changeTab(defaultTab);
+
+});

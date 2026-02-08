@@ -1,11 +1,17 @@
 package com.domoticsweb.proy_appweb_LPII.database.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "usuarios")
+@Getter
+@Setter
 public class Usuario {
 
     @Id
@@ -25,6 +31,15 @@ public class Usuario {
     @Column(name = "activo", nullable = false)
     private Boolean activo = true;
 
+    // AGREGUE ESTOS CAMPOS PARA MAPEARLOS POR LOS REPORTES, PERO SON SOLO MANEJADOS POR LA BASE DE DATOS.
+
+    @Column(name = "fechaCreacion", insertable = false, updatable = false)
+    private LocalDateTime fechaCreacion;
+
+    @Column(name = "fechaActualizacion", insertable = false, updatable = false)
+    private LocalDateTime fechaActualizacion;
+
+    // ROLES 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "usuarios_roles",
@@ -32,22 +47,4 @@ public class Usuario {
             inverseJoinColumns = @JoinColumn(name = "idRol")
     )
     private Set<Rol> roles = new HashSet<>();
-
-    public Long getIdUsuario() { return idUsuario; }
-    public void setIdUsuario(Long idUsuario) { this.idUsuario = idUsuario; }
-
-    public String getNombreUsuario() { return nombreUsuario; }
-    public void setNombreUsuario(String nombreUsuario) { this.nombreUsuario = nombreUsuario; }
-
-    public String getCorreo() { return correo; }
-    public void setCorreo(String correo) { this.correo = correo; }
-
-    public String getContrasenaHash() { return contrasenaHash; }
-    public void setContrasenaHash(String contrasenaHash) { this.contrasenaHash = contrasenaHash; }
-
-    public Boolean getActivo() { return activo; }
-    public void setActivo(Boolean activo) { this.activo = activo; }
-
-    public Set<Rol> getRoles() { return roles; }
-    public void setRoles(Set<Rol> roles) { this.roles = roles; }
 }

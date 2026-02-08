@@ -1,25 +1,23 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<div th:fragment="profile">
+<div th:fragment="profile" xmlns:th="http://www.thymeleaf.org">
 
-	<div class="border border-blue-200 rounded-lg shadow-md">
-		<div class="bg-gradient-to-r from-blue-50 to-cyan-50 border-b border-blue-200 p-6 flex justify-between items-center">
-			<div class="flex items-center gap-4">
-				<div class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white text-xl font-bold">
-					<span th:text="${#strings.substring(user.nombreUsuario,0,1).toUpperCase()}">U</span>
-				</div>
+    <div class="border border-blue-200 rounded-lg shadow-md">
+        <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border-b border-blue-200 p-6 flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <div class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white text-xl font-bold">
+                    <span th:text="${#strings.toUpperCase(#strings.substring(user.nombreUsuario,0,1))}">
+                        U
+                    </span>
+                </div>
 
-				<div>
-					<h3 class="text-xl font-semibold text-blue-900">Mi Perfil</h3>
-					<p class="text-slate-600">Gestiona tu información personal</p>
-				</div>
-				
-			</div>
-		</div>
+                <div>
+                    <h3 class="text-xl font-semibold text-blue-900">Mi Perfil</h3>
+                    <p class="text-slate-600">Gestiona tu información personal</p>
+                </div>
+            </div>
+        </div>
 
-		<!-- FORMULARIO -->
-		<form th:action="@{/usuario/actualizar}" th:object="${usuarioForm}" method="post" class="p-6 space-y-4">
-			<input type="hidden" th:field="*{id}">
+        <form th:action="@{/usuario/actualizar}" th:object="${usuarioForm}" method="post" class="p-6 space-y-4">
+            <input type="hidden" th:field="*{id}" />
 
 			<div class="grid md:grid-cols-2 gap-6">
 				<div>
@@ -44,7 +42,9 @@
 
 			<!-- Botones -->
 			<div class="flex gap-4">
-				<button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg" th:if="${editable}">Guardar cambios</button>
+				<button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg" onclick="return confirm('¿Deseas guardar sus cambios?')" th:if="${editable}">Guardar cambios</button>
+				<!-- BOTON CANCELAR -->
+    			<a th:if="${editable}" th:href="@{/usuario/panel}" onclick="return confirm('¿Deseas cancelar los cambios?')" class="bg-red-600 text-white px-4 py-2 rounded-lg">Cancelar</a>
 
 				<a th:href="@{/usuario/panel(editar=true)}" class="bg-green-500 text-white px-4 py-2 rounded-lg" th:if="${!editable}"> Editar </a>
 			</div>
@@ -53,9 +53,7 @@
 			<div th:if="${successMessage}" class="text-green-600 mt-2">
 				<p th:text="${successMessage}"></p>
 			</div>
-
 		</form>
 	</div>
 
 </div>
-</html>
