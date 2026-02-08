@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<div th:fragment="pedidos">
+<div th:fragment="pedidos" xmlns:th="http://www.thymeleaf.org">
 
   <div class="border border-blue-200 shadow-md rounded-lg">
 
@@ -59,20 +57,20 @@
             <!-- Estado -->
             <td class="p-3 text-center">
               <span th:switch="${venta.estado}">
-
+				<!-- CORREGIDOS ESTADOS -->
                 <span th:case="'PAGADO'"
                       class="px-3 py-1 rounded-full bg-green-100 text-green-800 border border-green-300">
-                  Entregado
+                  Pagado
                 </span>
 
-                <span th:case="'PENDIENTE'"
+                <span th:case="'DESPACHADO'"
                       class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-800 border border-yellow-300">
-                  Pendiente
+                  Despachado
                 </span>
 
-                <span th:case="*"
+                <span th:case="Entregado"
                       class="px-3 py-1 rounded-full bg-blue-100 text-blue-800 border border-blue-300">
-                  En proceso
+                  Entregado
                 </span>
 
               </span>
@@ -94,4 +92,3 @@
   </div>
 
 </div>
-</html>

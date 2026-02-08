@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -40,9 +41,10 @@ public class AuthController {
     }
 
     @GetMapping("/usuario/panel")
-    public String panelUsuario(Authentication authentication, 
-                               @RequestParam(name="editar", required=false, defaultValue="false") boolean editar,
-                               Model model) {
+    public String panelUsuario(Authentication authentication,
+            @RequestParam(name="editar", required=false, defaultValue="false") boolean editar,
+            @RequestParam(name="tab", required=false, defaultValue="perfil") String tab,
+            Model model) {
         
         String username = authentication.getName();
         Usuario user = usuarioRepository.findByNombreUsuarioIgnoreCase(username).orElseThrow();
@@ -59,6 +61,7 @@ public class AuthController {
         model.addAttribute("user", user);
         model.addAttribute("usuarioForm", usuarioForm);
         model.addAttribute("ventas", ventas);
+        model.addAttribute("activeTab", tab);  //ESTOY AÑADIENDO ESTO PARA LA URL
         model.addAttribute("totalPedidos", totalPedidos);
         model.addAttribute("totalGastado", totalGastado);
         model.addAttribute("editable", editar);
@@ -67,41 +70,38 @@ public class AuthController {
     }
 
     @PostMapping("/usuario/actualizar")
-    public String actualizarPerfil(@ModelAttribute("usuarioForm") UsuarioDTO form,
-                                   Authentication authentication,
-                                   Model model) {
+    public String actualizarPerfil(
+            @ModelAttribute("usuarioForm") UsuarioDTO form,
+            Authentication authentication,
+            RedirectAttributes redirectAttributes) {
 
-        // Traer usuario actual desde la base de datos
         String username = authentication.getName();
         Usuario user = usuarioRepository.findByNombreUsuarioIgnoreCase(username).orElseThrow();
 
-        // Actualizar campos editables
         user.setNombreUsuario(form.getNombreUsuario());
         user.setCorreo(form.getCorreo());
 
-        // Actualizar contraseña solo si se ingreso algo
         if (form.getNuevaContrasena() != null && !form.getNuevaContrasena().isBlank()) {
             String hash = passwordEncoder.encode(form.getNuevaContrasena());
             user.setContrasenaHash(hash);
         }
 
-        // Guardar cambios
         usuarioRepository.save(user);
-        
-        // Nueva autenticacion para los datos del usuario cambiados
-        var newAuth = new UsernamePasswordAuthenticationToken(user.getNombreUsuario(), authentication.getCredentials(), authentication.getAuthorities()
+
+        var newAuth = new UsernamePasswordAuthenticationToken(
+                user.getNombreUsuario(),
+                authentication.getCredentials(),
+                authentication.getAuthorities()
         );
 
         SecurityContextHolder.getContext().setAuthentication(newAuth);
 
-        // Se envian todos los datos mas el mensaje de exito
-        model.addAttribute("user", user);
-        model.addAttribute("usuarioForm", form);
-        model.addAttribute("successMessage", "Perfil actualizado correctamente ✅");
-        model.addAttribute("editable", false);
+        redirectAttributes.addFlashAttribute("successMessage",
+                "Perfil actualizado correctamente ✅");
 
-        return "usuario/panel";
+        return "redirect:/usuario/panel";
     }
+
 
 
 }

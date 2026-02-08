@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/layout :: layout}">
-<div th:fragment="content" class="container mx-auto px-6 py-12">
+<div th:fragment="content" th:attr="data-tab=${activeTab}" class="container mx-auto px-6 py-12">
   
   
   <!-- Welcome Section -->
@@ -10,37 +10,31 @@
   		<p class="mt-2 text-slate-600">Accede a tu perfil, visualiza tus pedidos y gestiona tu cuenta en un solo lugar.</p>
   	</div>
   </section>
-  
     <!-- Tabs -->
   <div class="w-full">
 
     <!-- Tabs List -->
 	<div class="grid grid-cols-2 bg-blue-100 p-1 rounded-lg mb-6">
-	  <button
-	    id="btn-perfil"
-	    type="button"
-	    data-tab="perfil"
-	    onclick="changeTab('perfil')">
-	    👤 Ver Perfil
-	  </button>
-	
-	  <button
-	    id="btn-pedidos"
-	    type="button"
-	    data-tab="pedidos"
-	    onclick="changeTab('pedidos')">
-	    📦 Mis Pedidos
-	  </button>
-	</div>
+
+  		<button class="tab-btn px-4 py-2 rounded-lg transition text-blue-900" type="button" data-tab="perfil">👤 Ver Perfil</button>
+
+  		<button
+    class="tab-btn px-4 py-2 rounded-lg transition text-blue-900"
+    type="button"
+    data-tab="pedidos">
+    📦 Mis Pedidos
+  </button>
+
+</div>
 	
 	<!-- Contenidos -->
 	<div id="perfil" class="tab-content">
 	  <!-- Perfil -->
-	  <div th:replace="usuario/components/profile :: profile"></div>
+	  <div th:replace="~{usuario/components/profile :: profile}"></div>
 	</div>
 	
 	<div id="pedidos" class="tab-content" hidden>
-		<!-- Pedidos -->>
+		<!-- Pedidos -->
 	  <div th:replace="usuario/components/pedidos :: pedidos"></div>
 	</div>
 
