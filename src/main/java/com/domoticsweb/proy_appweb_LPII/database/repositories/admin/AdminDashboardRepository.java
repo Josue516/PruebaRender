@@ -55,7 +55,7 @@ public class AdminDashboardRepository {
         return jdbc.queryForList("""
             SELECT DATE(v.fechaVenta) AS dia, COALESCE(SUM(v.total),0) AS total
             FROM ventas v
-            WHERE v.estado='PAGADA'
+            WHERE v.estado='PAGADO'
               AND v.fechaVenta >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
             GROUP BY DATE(v.fechaVenta)
             ORDER BY dia

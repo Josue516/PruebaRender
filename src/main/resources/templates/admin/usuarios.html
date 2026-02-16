@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/admin-layout :: layout}">
+
+<div th:fragment="content" x-data="usuariosManager()" class="min-h-screen bg-slate-50/50 p-4 md:p-8">
+    
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div>
+            <a th:href="@{/admin/panel}" 
+               class="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-blue-600 transition-colors mb-2 group">
+                <span class="flex items-center justify-center w-7 h-7 rounded-full bg-white shadow-sm border border-slate-200 group-hover:bg-blue-50 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                </span>
+                Volver al Panel
+            </a>
+            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Gestión de Usuarios</h1>
+            <p class="text-slate-500 text-sm mt-1">Administra las credenciales y niveles de acceso de la plataforma.</p>
+        </div>
+
+        <button @click="usuario = {activo: true}; isEdit = false; openModal = true"
+                class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-bold transition-all shadow-lg shadow-blue-200 active:scale-95">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Nuevo Usuario
+        </button>
+    </div>
+
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200">
+                <thead class="bg-slate-50/50">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-[11px] font-bold text-slate-400 uppercase tracking-widest">ID</th>
+                        <th class="px-6 py-4 text-left text-[11px] font-bold text-slate-400 uppercase tracking-widest">Usuario / Correo</th>
+                        <th class="px-6 py-4 text-left text-[11px] font-bold text-slate-400 uppercase tracking-widest">Roles</th>
+                        <th class="px-6 py-4 text-left text-[11px] font-bold text-slate-400 uppercase tracking-widest">Estado</th>
+                        <th class="px-6 py-4 text-center text-[11px] font-bold text-slate-400 uppercase tracking-widest">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-slate-100">
+                    <tr th:each="u : ${usuarios}" class="hover:bg-slate-50/50 transition-colors group">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-400" th:text="${u.idUsuario}">#1</td>
+
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex flex-col">
+                                <span class="text-sm font-bold text-slate-800" th:text="${u.nombreUsuario}">nombre</span>
+                                <span class="text-xs text-slate-500" th:text="${u.correo}">correo@ejemplo.com</span>
+                            </div>
+                        </td>
+
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex flex-wrap gap-1">
+                                <span th:each="rol : ${u.roles}"
+                                      class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200 uppercase tracking-wider"
+                                      th:text="${rol.nombre}">ROLE</span>
+                            </div>
+                        </td>
+
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border"
+                                  th:classappend="${u.activo ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-red-50 text-red-600 border-red-100'}">
+                                <span class="w-1.5 h-1.5 mr-2 rounded-full shadow-sm" th:classappend="${u.activo ? 'bg-emerald-500' : 'bg-red-500'}"></span>
+                                <span th:text="${u.activo} ? 'Activo' : 'Inactivo'">Estado</span>
+                            </span>
+                        </td>
+
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center justify-center gap-2">
+                                <button type="button" th:data-id="${u.idUsuario}" th:data-nombre="${u.nombreUsuario}"
+                                        th:data-correo="${u.correo}" th:data-activo="${u.activo}"
+                                        th:data-rol="${!u.roles.isEmpty() ? u.roles.iterator().next().idRol : ''}"
+                                        th:disabled="${usuarioActual != null and usuarioActual.idUsuario == u.idUsuario}"
+                                        @click="isEdit = true; usuario = { idUsuario: $el.dataset.id, nombreUsuario: $el.dataset.nombre, correo: $el.dataset.correo, activo: ($el.dataset.activo === 'true'), rolId: $el.dataset.rol }; openModal = true"
+                                        class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all disabled:opacity-30 disabled:hover:bg-transparent"
+                                        title="Editar Usuario">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2.25 2.25 0 113.182 3.182L11.75 21H8v-3.75l10.59-10.59z"/></svg>
+                                </button>
+
+                                <form th:action="@{/admin/usuarios/suspender/{id}(id=${u.idUsuario})}" method="post" class="m-0">
+                                    <button type="submit" 
+                                            th:disabled="${usuarioActual != null and usuarioActual.idUsuario == u.idUsuario}"
+                                            class="inline-flex items-center px-3 py-1.5 rounded-xl text-[11px] font-bold uppercase tracking-tight transition-all active:scale-95 disabled:opacity-30 shadow-sm"
+                                            th:classappend="${u.activo ? 'bg-red-50 text-red-600 hover:bg-red-600 hover:text-white border border-red-100' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white border border-emerald-100'}"
+                                            th:text="${u.activo} ? 'Suspender' : 'Activar'">
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div x-show="openModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-md p-4 transition-all">
+        <div @click.away="openModal = false" class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-100 transform transition-all">
+            
+            <div class="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-900 tracking-tight" 
+                        x-text="isEdit ? 'Actualizar Perfil' : 'Registrar Nuevo Usuario'"></h2>
+                    <p class="text-xs text-slate-500 mt-1" x-text="isEdit ? 'Modifica los accesos del usuario' : 'Completa los datos para el nuevo registro'"></p>
+                </div>
+                <button @click="openModal = false" class="p-2 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <form th:action="@{/admin/usuarios/save}" method="post" class="p-8 space-y-5">
+                <input type="hidden" name="idUsuario" x-model="usuario.idUsuario">
+
+                <div class="space-y-1.5">
+                    <label class="inline-block text-[11px] font-bold text-slate-400 uppercase tracking-wider ml-1">Nombre de Usuario</label>
+                    <input type="text" name="nombreUsuario" x-model="usuario.nombreUsuario" @blur="validarCampos()" required
+                           class="w-full px-4 py-3 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-sm transition-all placeholder:text-slate-400">
+                    <p x-show="usuarioDuplicado" class="flex items-center gap-1 text-red-500 text-[11px] font-medium mt-1 ml-1">
+                        <span class="w-1 h-1 rounded-full bg-red-500"></span> Usuario ya existe
+                    </p>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="inline-block text-[11px] font-bold text-slate-400 uppercase tracking-wider ml-1">Correo Electrónico</label>
+                    <input type="email" name="correo" x-model="usuario.correo" @blur="validarCampos()" required
+                           class="w-full px-4 py-3 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-sm transition-all placeholder:text-slate-400">
+                    <p x-show="correoDuplicado" class="flex items-center gap-1 text-red-500 text-[11px] font-medium mt-1 ml-1">
+                        <span class="w-1 h-1 rounded-full bg-red-500"></span> Correo ya registrado
+                    </p>
+                </div>
+
+                <div x-show="!isEdit" class="space-y-1.5">
+                    <label class="inline-block text-[11px] font-bold text-slate-400 uppercase tracking-wider ml-1">Contraseña</label>
+                    <input type="password" name="contrasenaRaw" :required="!isEdit"
+                           class="w-full px-4 py-3 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-sm transition-all">
+                </div>
+
+                <div class="space-y-1.5"> 
+                    <label class="inline-block text-[11px] font-bold text-slate-400 uppercase tracking-wider ml-1">Rol de Acceso</label>
+                    <div class="relative group">
+                        <select name="roles" x-model="usuario.rolId" required
+                                class="w-full appearance-none bg-slate-50/50 border border-slate-200 text-slate-700 text-sm rounded-xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 block p-3 transition-all">
+                            <option value="" disabled selected>Selecciona un rol...</option>
+                            <option th:each="rol : ${todosLosRoles}" th:value="${rol.idRol}" th:text="${rol.nombre}"></option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 pt-6">
+                    <button type="button" @click="openModal = false"
+                            class="px-5 py-2.5 text-sm font-semibold text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-all">
+                        Cancelar
+                    </button>
+                    <button type="submit" :disabled="usuarioDuplicado || correoDuplicado"
+                            class="px-7 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-blue-200 active:scale-95">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</html>
