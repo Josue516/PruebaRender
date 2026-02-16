@@ -1,25 +1,28 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org" th:fragment="layout">
 <head>
-<meta charset="UTF-8" />
-<link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>DomoticShop</title>
-<script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8" />
+    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DomoticShop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="flex flex-col min-h-screen">
 
-    <!-- HEADER -->
-    <div th:replace="~{components/NavMenu :: header}"></div>
+<body class="flex flex-col min-h-screen"
+      th:with="esAdmin=${#httpServletRequest != null and #strings.startsWith(#httpServletRequest.requestURI, '/admin')}">
+
+    <!-- HEADER público: oculto en /admin -->
+    <div th:if="${!esAdmin}" th:replace="~{components/NavMenu :: header}"></div>
 
     <!-- MAIN CONTENT -->
-    <main class="flex-grow ">
+    <main class="flex-grow">
         <div th:replace="~{::content}"></div>
     </main>
 
-    <!-- FOOTER -->
-    <div th:replace="~{components/Footer :: footer}"></div>
-    
-	<script th:src="@{/js/usuario-panel.js}" defer></script>
+    <!-- FOOTER público: oculto en /admin -->
+    <div th:if="${!esAdmin}" th:replace="~{components/Footer :: footer}"></div>
+
+    <!-- JS de usuario: también oculto en /admin -->
+    <script th:if="${!esAdmin}" th:src="@{/js/usuario-panel.js}" defer></script>
 </body>
 </html>

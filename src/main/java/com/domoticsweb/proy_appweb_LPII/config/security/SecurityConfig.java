@@ -1,13 +1,12 @@
 package com.domoticsweb.proy_appweb_LPII.config.security;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-
-import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 public class SecurityConfig {
@@ -20,23 +19,24 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // BCrypt
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
         http
             .authorizeHttpRequests(auth -> auth
-            	.requestMatchers("/api/productos/**").permitAll()
-            	.requestMatchers("/api/sesion/estado").permitAll()
-            	.requestMatchers("/api/pedidos/confirmar").permitAll()
+                // públicas
                 .requestMatchers("/", "/nosotros", "/contacto", "/productos", "/login", "/registro",
-                        "/images/**", "/css/**", "/js/**").permitAll()
+                                 "/images/**", "/css/**", "/js/**").permitAll()
 
+                // APIs públicas que ya usabas
+                .requestMatchers("/api/productos/**", "/api/sesion/estado", "/api/pedidos/confirmar").permitAll()
+
+                // protegidas por rol
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/usuario/**").hasAnyRole("USUARIO", "ADMIN")
-                
+
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
@@ -44,29 +44,30 @@ public class SecurityConfig {
                 .loginProcessingUrl("/login")
                 .usernameParameter("usuario")
                 .passwordParameter("contrasena")
-                .successHandler(authSuccessHandler)
+                .successHandler(authSuccessHandler)   // <- SOLO este
                 .failureUrl("/login?error=true")
                 .permitAll()
-                .defaultSuccessUrl("/productos", true)
             )
             .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/")
             )
             .csrf(csrf -> csrf
-            	    .ignoringRequestMatchers("/api/ventas/finalizar", "/api/pedidos/confirmar")
-            	)
+                .ignoringRequestMatchers("/api/ventas/finalizar", "/api/pedidos/confirmar")
+            )
             .exceptionHandling(e -> e
-                    .authenticationEntryPoint((request, response, authException) -> {
-                        // Si la petición es AJAX / Fetch, devolvemos 401 en vez de redirigir
-                        if ("XMLHttpRequest".equals(request.getHeader("X-Requested-With")) || 
-                            request.getHeader("Accept").contains("application/json")) {
-                            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-                        } else {
-                            response.sendRedirect("/login");
-                        }
-                    })
-                );;
+                .authenticationEntryPoint((request, response, authException) -> {
+                    String accept = request.getHeader("Accept");
+                    boolean isAjax = "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
+                    boolean wantsJson = accept != null && accept.contains("application/json");
+
+                    if (isAjax || wantsJson) {
+                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                    } else {
+                        response.sendRedirect("/login");
+                    }
+                })
+            );
 
         return http.build();
     }

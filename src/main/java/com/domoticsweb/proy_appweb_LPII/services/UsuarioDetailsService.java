@@ -25,8 +25,8 @@ public class UsuarioDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + input));
 
         var authorities = u.getRoles().stream()
-                .map(r -> new SimpleGrantedAuthority("ROLE_" + r.getNombre()))
-                .collect(Collectors.toList());
+        .map(r -> new SimpleGrantedAuthority("ROLE_" + r.getNombre().trim().toUpperCase()))
+        .collect(Collectors.toList());
 
         return org.springframework.security.core.userdetails.User
                 .withUsername(u.getNombreUsuario())   // para mostrar o identificar
