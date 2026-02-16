@@ -2,6 +2,8 @@ package com.domoticsweb.proy_appweb_LPII.controllers;
 
 import java.util.List;
 
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,41 +18,41 @@ import com.domoticsweb.proy_appweb_LPII.services.CategoriaService;
 
 import lombok.RequiredArgsConstructor;
 
-@RestController
-@RequestMapping("/api/categorias")
+@Controller
+@RequestMapping("/admin/categorias")
 @RequiredArgsConstructor
 public class CategoriaController {
 
     private final CategoriaService categoriaService;
 
-    // Listar todas
     @GetMapping
-    public List<Categoria> listar() {
-        return categoriaService.listarTodas();
+    public String listarCategorias(Model model) {
+
+        List<Categoria> categorias = categoriaService.listarTodas();
+        model.addAttribute("categorias", categorias);
+
+        System.out.println("Categorias encontradas: " + categorias.size());
+
+        return "admin/categorias";
+    }
+    @PostMapping("/save")
+    public String guardar(Categoria categoria){
+
+        categoriaService.guardar(categoria);
+
+        return "redirect:/admin/categorias";
     }
 
-    // Buscar por ID
-    @GetMapping("/{id}")
-    public Categoria buscar(@PathVariable Long id) {
-        return categoriaService.buscarPorId(id);
-    }
+    @PostMapping("/toggle/{id}")
+    public String toggle(@PathVariable Long id){
 
-    // Crear
-    @PostMapping
-    public Categoria crear(@RequestBody Categoria categoria) {
-        return categoriaService.guardar(categoria);
-    }
-
-    // Actualizar
-    @PutMapping("/{id}")
-    public Categoria actualizar(@PathVariable Long id,
-                                @RequestBody Categoria categoria) {
-        return categoriaService.actualizar(id, categoria);
-    }
-
-    // Desactivar
-    @DeleteMapping("/{id}")
-    public void eliminar(@PathVariable Long id) {
         categoriaService.desactivar(id);
+
+        return "redirect:/admin/categorias";
+    }
+    @PostMapping("/estado/{id}")
+    public String cambiarEstado(@PathVariable Long id){
+        categoriaService.desactivar(id);
+        return "redirect:/admin/categorias";
     }
 }

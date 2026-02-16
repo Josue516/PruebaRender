@@ -1,137 +1,133 @@
 <!DOCTYPE html>
-<html lang="es"
-      xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="~{layout/admin-layout :: layout}">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+	th:replace="~{layout/admin-layout :: layout}">
 <div th:fragment="content" class="min-h-screen bg-slate-100">
 
-  <div class="max-w-[1400px] mx-auto px-4 md:px-6 py-6">
-    <div class="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
+	<div class="max-w-[1400px] mx-auto px-4 md:px-6 py-6">
+		<div class="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
 
-      <!-- SIDEBAR -->
-      <aside class="bg-slate-900 text-white rounded-2xl p-5 shadow">
-        <!-- Bloque tienda + admin -->
-        <div class="bg-slate-800 rounded-2xl p-4 mb-5">
-          <div class="flex items-center gap-3">
-            <!-- Círculo foto -->
-            <div class="w-14 h-14 rounded-full bg-slate-700 border-2 border-blue-400 overflow-hidden flex items-center justify-center">
-              <img th:if="${data.fotoUrl != null}" th:src="@{${data.fotoUrl}}" alt="foto" class="w-full h-full object-cover"/>
-              <span th:if="${data.fotoUrl == null}" class="text-xl">👤</span>
-            </div>
-            <div>
-              <p class="text-lg font-bold" th:text="${data.nombreTienda}">IEoDomoTics</p>
-              <p class="text-sm text-slate-300">
-                Bienvenido, <span th:text="${data.nombreAdmin}">Mary</span>
-              </p>
-            </div>
-          </div>
-        </div>
+			<!-- SIDEBAR -->
+			<aside class="bg-slate-900 text-white rounded-2xl p-5 shadow">
+				<!-- Bloque tienda + admin -->
+				<div class="bg-slate-800 rounded-2xl p-4 mb-5">
+					<div class="flex items-center gap-3">
+						<!-- Círculo foto -->
+						<div
+							class="w-14 h-14 rounded-full bg-slate-700 border-2 border-blue-400 overflow-hidden flex items-center justify-center">
+							<img th:if="${data.fotoUrl != null}" th:src="@{${data.fotoUrl}}"
+								alt="foto" class="w-full h-full object-cover" /> <span
+								th:if="${data.fotoUrl == null}" class="text-xl">👤</span>
+						</div>
+						<div>
+							<p class="text-lg font-bold" th:text="${data.nombreTienda}">IEoDomoTics</p>
+							<p class="text-sm text-slate-300">
+								Bienvenido, <span th:text="${data.nombreAdmin}">Mary</span>
+							</p>
+						</div>
+					</div>
+				</div>
 
-        <!-- Menú -->
-        <nav class="space-y-2">
-          <a href="/admin/panel" class="block px-4 py-3 rounded-xl bg-blue-600 font-semibold">📊 Dashboard</a>
-          <a href="/admin/proveedores" class="block px-4 py-3 rounded-xl hover:bg-slate-800 transition">🚚 Proveedores</a>
-          <a href="/admin/categorias" class="block px-4 py-3 rounded-xl hover:bg-slate-800 transition">🗂️ Categorías</a>
-          <a href="/admin/productos" class="block px-4 py-3 rounded-xl hover:bg-slate-800 transition">📦 Productos</a>
-          <a href="/admin/stock" class="block px-4 py-3 rounded-xl hover:bg-slate-800 transition">📦 Stock</a>
-        </nav>
+				<!-- Menú -->
+				<nav class="space-y-2">
+					<a href="/admin/panel"
+						class="block px-4 py-3 rounded-xl bg-blue-600 font-semibold">📊
+						Dashboard</a> <a href="/admin/usuarios"
+						class="block px-4 py-3 rounded-xl hover:bg-slate-800 transition">👥
+						Usuarios</a> <a href="/admin/proveedores"
+						class="block px-4 py-3 rounded-xl hover:bg-slate-800 transition">🚚
+						Proveedores</a> <a href="/admin/categorias"
+						class="block px-4 py-3 rounded-xl hover:bg-slate-800 transition">🗂️
+						Categorías</a> <a href="/admin/productos"
+						class="block px-4 py-3 rounded-xl hover:bg-slate-800 transition">📦
+						Productos</a> <a href="/admin/stock"
+						class="block px-4 py-3 rounded-xl hover:bg-slate-800 transition">📦
+						Stock</a>
+				</nav>
 
-        <div class="mt-8 pt-4 border-t border-slate-700">
-          <form th:action="@{/logout}" method="post">
-            <button class="w-full bg-red-600 hover:bg-red-700 rounded-xl py-3 font-semibold">Cerrar sesión</button>
-          </form>
-        </div>
-      </aside>
+				<div class="mt-8 pt-4 border-t border-slate-700">
+					<form th:action="@{/logout}" method="post">
+						<button
+							class="w-full bg-red-600 hover:bg-red-700 rounded-xl py-3 font-semibold">Cerrar
+							sesión</button>
+					</form>
+				</div>
+			</aside>
 
-      <!-- CONTENIDO -->
-      <section class="space-y-6">
+			<!-- CONTENIDO -->
+			<section class="space-y-6">
 
-        <!-- Header superior del dashboard -->
-        <div class="bg-white rounded-2xl p-5 shadow-sm flex items-center justify-between">
-          <div>
-            <h1 class="text-3xl font-bold text-slate-900">Dashboard</h1>
-            <p class="text-slate-600">
-              Bienvenido <span class="font-semibold" th:text="${data.nombreAdmin}">Mary</span>
-            </p>
-          </div>
+				<!-- Header superior del dashboard -->
+				<div
+					class="bg-white rounded-2xl p-5 shadow-sm flex items-center justify-between">
+					<div>
+						<h1 class="text-3xl font-bold text-slate-900">Dashboard</h1>
+						<p class="text-slate-600">
+							Bienvenido <span class="font-semibold"
+								th:text="${data.nombreAdmin}">Mary</span>
+						</p>
+					</div>
 
-          <!-- Día/Noche + Campana (sin buscador) -->
-          <div class="flex items-center gap-3">
-            <button id="btnTema" type="button"
-                    class="w-11 h-11 rounded-full border border-slate-300 hover:bg-slate-100 transition"
-                    title="Cambiar tema">
-              🌙
-            </button>
 
-            <button type="button"
-                    class="relative w-11 h-11 rounded-full border border-slate-300 hover:bg-slate-100 transition"
-                    title="Notificaciones bajo stock">
-              🔔
-              <span th:if="${data.notificacionesBajoStock > 0}"
-                    class="absolute -top-1 -right-1 bg-red-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center"
-                    th:text="${data.notificacionesBajoStock}">3</span>
-            </button>
-          </div>
-        </div>
+				</div>
 
-        <!-- Métricas -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <article class="bg-white rounded-2xl p-5 shadow-sm">
-            <p class="text-slate-500">Total vendido</p>
-            <p class="text-4xl font-bold text-slate-900 mt-2"
-               th:text="'S/ ' + ${#numbers.formatDecimal(data.totalVendido,1,2)}">S/ 1800.00</p>
-            <p class="text-slate-500 mt-1">Acumulado</p>
-          </article>
+				<!-- Métricas -->
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+					<article class="bg-white rounded-2xl p-5 shadow-sm">
+						<p class="text-slate-500">Total vendido</p>
+						<p class="text-4xl font-bold text-slate-900 mt-2"
+							th:text="'S/ ' + ${#numbers.formatDecimal(data.totalVendido,1,2)}">S/
+							1800.00</p>
+						<p class="text-slate-500 mt-1">Acumulado</p>
+					</article>
 
-          <article class="bg-white rounded-2xl p-5 shadow-sm">
-            <p class="text-slate-500">Cantidad de ventas</p>
-            <p class="text-4xl font-bold text-slate-900 mt-2"
-               th:text="${data.cantidadVentas}">2</p>
-            <p class="text-slate-500 mt-1">Transacciones</p>
-          </article>
+					<article class="bg-white rounded-2xl p-5 shadow-sm">
+						<p class="text-slate-500">Cantidad de ventas</p>
+						<p class="text-4xl font-bold text-slate-900 mt-2"
+							th:text="${data.cantidadVentas}">2</p>
+						<p class="text-slate-500 mt-1">Transacciones</p>
+					</article>
 
-          <article class="bg-white rounded-2xl p-5 shadow-sm">
-            <p class="text-slate-500">Ticket promedio</p>
-            <p class="text-4xl font-bold text-slate-900 mt-2"
-               th:text="'S/ ' + ${#numbers.formatDecimal(data.ticketPromedio,1,2)}">S/ 900.00</p>
-            <p class="text-slate-500 mt-1">Promedio por venta</p>
-          </article>
-        </div>
+					<article class="bg-white rounded-2xl p-5 shadow-sm">
+						<p class="text-slate-500">Ticket promedio</p>
+						<p class="text-4xl font-bold text-slate-900 mt-2"
+							th:text="'S/ ' + ${#numbers.formatDecimal(data.ticketPromedio,1,2)}">S/
+							900.00</p>
+						<p class="text-slate-500 mt-1">Promedio por venta</p>
+					</article>
+				</div>
 
-        <!-- Gráfico + Top productos + Calendario -->
-        <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+				<!-- Gráfico + Top productos + Calendario -->
+				<div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
 
-          <!-- Ventas -->
-          <article class="xl:col-span-2 bg-white rounded-2xl p-5 shadow-sm">
-            <h3 class="text-xl font-semibold text-slate-900 mb-4">Ventas últimos 7 días</h3>
-            <canvas id="chartVentas" height="110"></canvas>
-          </article>
+					<!-- Ventas -->
+					<article class="xl:col-span-2 bg-white rounded-2xl p-5 shadow-sm">
+						<h3 class="text-xl font-semibold text-slate-900 mb-4">Ventas
+							últimos 7 días</h3>
+						<canvas id="chartVentas" height="110"></canvas>
+					</article>
 
-          <!-- Top productos -->
-          <article class="bg-white rounded-2xl p-5 shadow-sm">
-            <h3 class="text-xl font-semibold text-slate-900 mb-4">Top productos</h3>
-            <ul class="space-y-3">
-              <li th:each="p : ${data.topProductos}" class="flex items-center justify-between">
-                <span class="text-slate-700" th:text="${p.nombre}">Producto</span>
-                <span class="font-bold text-slate-900" th:text="${p.cantidad}">10</span>
-              </li>
-            </ul>
-          </article>
+					<!-- Top productos -->
+					<article class="bg-white rounded-2xl p-5 shadow-sm">
+						<h3 class="text-xl font-semibold text-slate-900 mb-4">Top
+							productos</h3>
+						<ul class="space-y-3">
+							<li th:each="p : ${data.topProductos}"
+								class="flex items-center justify-between"><span
+								class="text-slate-700" th:text="${p.nombre}">Producto</span> <span
+								class="font-bold text-slate-900" th:text="${p.cantidad}">10</span>
+							</li>
+						</ul>
+					</article>
 
-          <!-- Calendario -->
-          <article class="bg-white rounded-2xl p-5 shadow-sm xl:col-span-3">
-            <h3 class="text-xl font-semibold text-slate-900 mb-3">Calendario</h3>
-            <input type="date" class="border border-slate-300 rounded-lg px-3 py-2">
-          </article>
+				</div>
+			</section>
+		</div>
+	</div>
 
-        </div>
-      </section>
-    </div>
-  </div>
-
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script th:inline="javascript">
+	<!-- Chart.js -->
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script th:inline="javascript">
     const labels = /*[[${data.labelsVentas}]]*/ [];
     const valores = /*[[${data.serieVentas}]]*/ [];
 

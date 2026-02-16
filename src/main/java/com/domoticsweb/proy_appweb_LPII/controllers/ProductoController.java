@@ -39,7 +39,7 @@ public class ProductoController {
                 : productoService.listarTodos();
 
         model.addAttribute("productos", productos);
-        model.addAttribute("categorias", categoriaService.listarTodas());
+        model.addAttribute("categorias", categoriaService.listarActivas());
         model.addAttribute("categoriaSeleccionada", idCat != null ? idCat : "todos");
 
         // Petición AJAX → devolver solo el fragmento

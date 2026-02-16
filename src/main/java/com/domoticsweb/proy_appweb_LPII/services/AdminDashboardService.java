@@ -1,7 +1,11 @@
 package com.domoticsweb.proy_appweb_LPII.services;
 
+import com.domoticsweb.proy_appweb_LPII.database.repositories.VentaRepository;
 import com.domoticsweb.proy_appweb_LPII.database.repositories.admin.AdminDashboardRepository;
 import com.domoticsweb.proy_appweb_LPII.dto.admin.DashboardData;
+
+import lombok.AllArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -10,13 +14,11 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@AllArgsConstructor
 public class AdminDashboardService {
 
     private final AdminDashboardRepository repo;
-
-    public AdminDashboardService(AdminDashboardRepository repo) {
-        this.repo = repo;
-    }
+    private final VentaRepository ventaRepository;
 
     public DashboardData obtenerDashboard(String username) {
         DashboardData d = new DashboardData();
@@ -25,8 +27,8 @@ public class AdminDashboardService {
         d.setNombreTienda("IEoDomoTics");
         d.setFotoUrl(null); // luego puedes poner /images/mary.jpg, etc.
 
-        BigDecimal total = repo.totalVendido();
-        int ventas = repo.cantidadVentas();
+        BigDecimal total = ventaRepository.sumTotalVentasPagadas();
+        int ventas = ventaRepository.countVentasPagadas();
         BigDecimal ticket = ventas > 0
                 ? total.divide(BigDecimal.valueOf(ventas), 2, java.math.RoundingMode.HALF_UP)
                 : BigDecimal.ZERO;

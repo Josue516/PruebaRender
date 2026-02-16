@@ -1,5 +1,6 @@
 package com.domoticsweb.proy_appweb_LPII.database.repositories;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,10 +23,14 @@ public interface VentaRepository extends JpaRepository<Venta, Long> {
 
     // Para ver cuánto dinero se ha ganado (Suma total)
     @Query("SELECT SUM(v.total) FROM Venta v WHERE v.estado = 'PAGADO'")
-    Double sumTotalVentasPagadas();
+    BigDecimal sumTotalVentasPagadas();
 
     // Para buscar por nombre de usuario directamente (Barra de búsqueda del admin)
     List<Venta> findByUsuario_NombreUsuarioContainingIgnoreCase(String nombre);
     
+    @Query("SELECT COUNT(v) FROM Venta v WHERE v.estado = 'PAGADO'")
+    int countVentasPagadas();
     
+    @Query("SELECT COALESCE(AVG(v.total), 0) FROM Venta v WHERE v.estado = 'PAGADO'")
+    Double avgTicketVentasPagadas();
 }
