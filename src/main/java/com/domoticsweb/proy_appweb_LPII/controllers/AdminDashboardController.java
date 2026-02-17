@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @AllArgsConstructor
@@ -32,32 +33,36 @@ public class AdminDashboardController {
         return "admin/dashboard";
     }
 
-    @GetMapping("/admin/proveedores")
-    public String proveedores() {
-        return "admin/proveedores";
-    }
-
-
-
-    @GetMapping("/admin/productos")
-    public String productos() {
-        return "admin/productos";
-    }
-
-    @GetMapping("/admin/stock")
-    public String stock() {
-        return "admin/stock";
-    }
     @GetMapping("/admin/usuarios")
-    public String usuarios(Model model) {
-    	List<Usuario> listaUsuarios = usuarioRepository.findAll();
-    	
-    	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName(); // nombre del usuario logueado
+    public String usuarios(
+            @RequestParam(required = false) String nombre,
+            @RequestParam(required = false) Long idRol,
+            @RequestParam(required = false) Boolean activo,
+            Model model) {
+
+        // Normalizar parámetros vacíos a null
+        nombre = (nombre != null && nombre.trim().isEmpty()) ? null : nombre;
+
+        List<Usuario> usuarios;
+
+        if (nombre != null || idRol != null || activo != null) {
+            usuarios = usuarioRepository.filtrarUsuarios(nombre, idRol, activo);
+        } else {
+            usuarios = usuarioRepository.findAll();
+        }
+
+        // Obtener usuario actual (para evitar que se edite a sí mismo)
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
         Usuario usuarioActual = usuarioRepository.findByNombreUsuarioIgnoreCase(username).orElse(null);
+
         model.addAttribute("usuarioActual", usuarioActual);
+        model.addAttribute("usuarios", usuarios);
         model.addAttribute("todosLosRoles", rolRepository.findAll());
-        model.addAttribute("usuarios", listaUsuarios);
+        model.addAttribute("nombreFiltro", nombre);
+        model.addAttribute("rolSeleccionado", idRol);
+        model.addAttribute("activoSeleccionado", activo);
+
         return "admin/usuarios";
     }
 }

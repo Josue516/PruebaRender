@@ -18,6 +18,7 @@ import com.domoticsweb.proy_appweb_LPII.database.repositories.UsuarioRepository;
 import com.domoticsweb.proy_appweb_LPII.database.repositories.VentaRepository;
 import com.domoticsweb.proy_appweb_LPII.dto.CarritoDTO;
 import com.domoticsweb.proy_appweb_LPII.dto.VentaDTO;
+import com.domoticsweb.proy_appweb_LPII.services.InventarioService;
 import com.domoticsweb.proy_appweb_LPII.services.PaypalService;
 
 import java.time.LocalDateTime;
@@ -34,7 +35,7 @@ public class VentaController {
     private final DetalleVentaRepository detalleVentaRepository;
     private final ProductoRepository productoRepository;
     private final UsuarioRepository usuarioRepository;
-    
+    private final InventarioService inventarioService;
     private final PaypalService payPalService; 
 
     @PostMapping("/finalizar")
@@ -83,7 +84,11 @@ public class VentaController {
 
             // Guardado masivo
             detalleVentaRepository.saveAll(detalles);
-
+            
+            for (CarritoDTO item : compra.getItems()) {
+                inventarioService.reducirStock(item.getId(), item.getCantidad());
+            }
+            
             return ResponseEntity.ok(Map.of(
                 "idVenta", nuevaVenta.getIdVenta(),
                 "mensaje", "Venta realizada con éxito"

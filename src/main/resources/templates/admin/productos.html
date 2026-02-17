@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/admin-layout :: layout}">
+<div th:fragment="content" x-data="productosManager()" class="min-h-screen bg-slate-50/50 p-4 md:p-8">
+
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div>
+            <a th:href="@{/admin/panel}" 
+               class="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-blue-600 transition-colors mb-2 group">
+                <span class="flex items-center justify-center w-7 h-7 rounded-full bg-white shadow-sm border border-slate-200 group-hover:bg-blue-50 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                </span>
+                Volver al Panel
+            </a>
+            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Gestión de Productos</h1>
+            <p class="text-slate-500 text-sm mt-1">Controla el inventario, precios y categorías de tu catálogo.</p>
+        </div>
+
+        <button @click="nuevoProducto()" 
+                class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-bold transition-all shadow-lg shadow-blue-200 active:scale-95">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Nuevo Producto
+        </button>
+    </div>
+
+    <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm mb-6">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm mb-8">
+    <form method="get" th:action="@{/admin/productos}" class="flex flex-wrap items-end gap-4">
+        
+        <div class="flex-1 min-w-[260px]">
+            <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Buscar producto</label>
+            <div class="relative">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </span>
+                <input type="text"
+                       name="nombre"
+                       placeholder="Nombre, marca o modelo..."
+                       th:value="${nombreFiltro}"
+                       class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-sm transition-all placeholder:text-slate-400">
+            </div>
+        </div>
+
+        <div class="w-full md:w-56">
+            <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Categoría</label>
+            <div class="relative group">
+                <select name="idCategoria"
+                        class="w-full appearance-none px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-sm transition-all cursor-pointer">
+                    <option value="">Todas las categorías</option>
+                    <option th:each="cat : ${categorias}"
+                            th:value="${cat.idCategoria}"
+                            th:text="${cat.nombre}"
+                            th:selected="${categoriaSeleccionada == cat.idCategoria}">
+                    </option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400 group-focus-within:text-blue-500">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="w-full md:w-48">
+            <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Estado</label>
+            <div class="relative group">
+                <select name="activo"
+                        class="w-full appearance-none px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-sm transition-all cursor-pointer">
+                    <option value="">Todos los estados</option>
+                    <option value="true" th:selected="${activoSeleccionado != null && activoSeleccionado == true}">Activos</option>
+                    <option value="false" th:selected="${activoSeleccionado != null && activoSeleccionado == false}">Inactivos</option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-400 group-focus-within:text-blue-500">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex gap-2">
+            <button type="submit"
+                    class="px-6 py-2.5 bg-slate-900 text-white text-sm font-bold rounded-xl hover:bg-blue-600 transition-all shadow-lg shadow-slate-200 active:scale-95">
+                Filtrar
+            </button>
+            
+            <a th:href="@{/admin/productos}"
+               class="px-6 py-2.5 bg-slate-100 text-slate-600 text-sm font-bold rounded-xl hover:bg-slate-200 transition-all active:scale-95 flex items-center justify-center">
+               Limpiar
+            </a>
+        </div>
+    </form>
+</div>
+    </div>
+
+    <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200">
+                <thead class="bg-slate-50/50">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-[11px] font-bold text-slate-400 uppercase tracking-widest">ID</th>
+                        <th class="px-6 py-4 text-left text-[11px] font-bold text-slate-400 uppercase tracking-widest">Producto</th>
+                        <th class="px-6 py-4 text-left text-[11px] font-bold text-slate-400 uppercase tracking-widest">Categoría</th>
+                        <th class="px-6 py-4 text-left text-[11px] font-bold text-slate-400 uppercase tracking-widest">Precio</th>
+                        <th class="px-6 py-4 text-left text-[11px] font-bold text-slate-400 uppercase tracking-widest">Estado</th>
+                        <th class="px-6 py-4 text-center text-[11px] font-bold text-slate-400 uppercase tracking-widest">Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody class="divide-y divide-slate-100 bg-white">
+                    <tr th:each="p : ${productos}" class="hover:bg-slate-50/50 transition-colors group">
+                        <td class="px-6 py-4 text-sm font-medium text-slate-400" th:text="${'#' + p.idProducto}"></td>
+                        <td class="px-6 py-4">
+                            <div class="flex flex-col">
+                                <span class="text-sm font-bold text-slate-800" th:text="${p.nombre}"></span>
+                                <span class="text-[11px] font-medium text-slate-400 uppercase tracking-tighter" th:text="${p.marca}"></span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="text-xs font-semibold px-2.5 py-1 bg-blue-50 text-blue-600 rounded-lg border border-blue-100" th:text="${p.categoria.nombre}"></span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="text-sm font-extrabold text-slate-900" th:text="'S/ ' + ${#numbers.formatDecimal(p.precio,1,2)}"></span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span th:classappend="${p.activo ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-red-50 text-red-600 border-red-100'}"
+                                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border uppercase tracking-wide"
+                                  th:text="${p.activo ? 'Activo' : 'Inactivo'}"></span>
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            <div class="flex items-center justify-center gap-2">
+                                <button th:data-id="${p.idProducto}" th:data-nombre="${p.nombre}" th:data-marca="${p.marca}" th:data-precio="${p.precio}" th:data-categoria="${p.categoria.idCategoria}" th:data-descripcion="${p.descripcion}" th:data-imagen="${p.imagenes != null and !p.imagenes.isEmpty() ? p.imagenes[0].urlImagen : ''}"
+                                    @click="editarProducto(parseInt($el.dataset.id),$el.dataset.nombre,$el.dataset.marca, parseFloat($el.dataset.precio), parseInt($el.dataset.categoria), $el.dataset.descripcion,$el.dataset.imagen)"
+                                    class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors group-hover:scale-110 transform" title="Editar">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2.25 2.25 0 113.182 3.182L11.75 21H8v-3.75l10.59-10.59z"/></svg>
+                                </button>
+
+                                <form th:action="@{/admin/productos/suspender/{id}(id=${p.idProducto})}" method="post" class="inline">
+                                    <button type="submit" 
+                                            th:classappend="${p.activo ? 'text-red-500 hover:bg-red-50 border-red-100' : 'text-emerald-500 hover:bg-emerald-50 border-emerald-100'}"
+                                            class="inline-flex items-center px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-tight border transition-all active:scale-95 shadow-sm"
+                                            th:text="${p.activo ? 'Suspender' : 'Activar'}"></button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div x-show="openModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 transition-all">
+        <div @click.away="openModal=false" class="bg-white rounded-[2rem] w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl border border-slate-100 transform transition-all overflow-hidden">
+            
+            <div class="px-8 py-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+                <div>
+                    <h2 class="text-2xl font-black text-slate-900 tracking-tight" x-text="isEdit ? 'Editar Producto' : 'Nuevo Producto'"></h2>
+                    <p class="text-xs text-slate-500 mt-1 font-medium">Todos los campos marcados con (*) son obligatorios.</p>
+                </div>
+                <button @click="openModal=false" class="p-2.5 rounded-full hover:bg-slate-200/50 text-slate-400 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <div class="px-8 py-8 overflow-y-auto flex-1 scrollbar-thin scrollbar-thumb-slate-200">
+                <form th:action="@{/admin/productos/guardar}" method="post" id="formProducto" class="space-y-6">
+                    <input type="hidden" name="idProducto" x-model="producto.idProducto">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-1.5">
+                            <label class="inline-block text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Nombre del Producto *</label>
+                            <input name="nombre" x-model="producto.nombre" required placeholder="Ej: Cámara Pro..."
+                                   class="w-full px-4 py-3 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-sm transition-all shadow-sm">
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="inline-block text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Marca</label>
+                            <input name="marca" x-model="producto.marca" placeholder="Ej: Sony..."
+                                   class="w-full px-4 py-3 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-sm transition-all shadow-sm">
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="inline-block text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Precio (S/) *</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-400 text-sm">S/</span>
+                                <input type="number" step="0.01" name="precio" x-model="producto.precio" required placeholder="0.00"
+                                       class="w-full pl-10 pr-4 py-3 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-sm transition-all shadow-sm">
+                            </div>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            <label class="inline-block text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Categoría *</label>
+                            <select name="categoriaId" x-model="producto.categoriaId" required
+                                    class="w-full px-4 py-3 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-sm transition-all shadow-sm appearance-none cursor-pointer">
+                                <option value="">Seleccionar...</option>
+                                <option th:each="c : ${categorias}" th:value="${c.idCategoria}" th:text="${c.nombre}"></option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="inline-block text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Descripción</label>
+                        <textarea name="descripcion" x-model="producto.descripcion" rows="2" placeholder="Detalles del producto..."
+                                  class="w-full px-4 py-3 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-sm transition-all shadow-sm resize-none"></textarea>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label class="inline-block text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Imagen del Producto (URL)</label>
+                        <input type="text" name="urlImagen" x-model="producto.urlImagen" required placeholder="https://..."
+                               class="w-full px-4 py-3 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-sm transition-all shadow-sm">
+                        
+                        <div x-show="producto.urlImagen" class="mt-4 flex justify-center">
+                            <div class="relative group p-1 bg-white rounded-2xl border border-slate-200 shadow-xl">
+                                <img :src="producto.urlImagen" alt="Preview" class="w-44 h-44 object-cover rounded-xl transition-transform group-hover:scale-105">
+                                <div class="absolute inset-0 bg-black/5 rounded-xl pointer-events-none"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div x-show="!isEdit" class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                        <div class="space-y-1.5">
+                            <label class="inline-block text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Stock Inicial *</label>
+                            <input name="stockInicial" type="number" placeholder="0" class="w-full px-4 py-3 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-sm transition-all shadow-sm">
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="inline-block text-[11px] font-bold text-slate-400 uppercase tracking-widest ml-1">Stock Mínimo *</label>
+                            <input name="stockMinimo" type="number" placeholder="0" class="w-full px-4 py-3 rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-sm transition-all shadow-sm">
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="px-8 py-5 border-t border-slate-100 bg-slate-50/80 flex justify-end gap-3">
+                <button type="button" @click="openModal=false" class="px-6 py-2.5 text-sm font-bold text-slate-500 hover:text-slate-800 hover:bg-slate-200 transition-all rounded-xl">
+                    Descartar
+                </button>
+                <button type="submit" form="formProducto" class="px-8 py-2.5 bg-blue-600 text-white text-sm font-black rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 active:scale-95">
+                    Guardar Producto
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+</html>
