@@ -35,7 +35,8 @@ public class SecurityConfig {
 
                 // protegidas por rol
                 .requestMatchers("/admin/**").hasRole("ADMIN")
-                .requestMatchers("/usuario/**").hasAnyRole("USUARIO", "ADMIN")
+                .requestMatchers("/usuario/**").hasAnyRole("USUARIO", "ADMIN","GESTOR")
+                .requestMatchers("/gestor/**").hasAnyRole("GESTOR", "ADMIN")
 
                 .anyRequest().authenticated()
             )

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" th:fragment="layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo} ? ${titulo} : 'Panel Gestor'">Panel Gestor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        [x-cloak] { display: none !important; }
+        /* Animación suave para el contenido */
+        .fade-in-up {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50/50 min-h-screen flex flex-col">
+
+    <nav class="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-md border-b border-slate-200/60">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-200">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-black text-slate-900 leading-none tracking-tight">VentasPro</h1>
+                        <p class="text-[10px] font-bold text-blue-600 uppercase tracking-[0.2em]">Panel Gestor</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-6">
+                    <form th:action="@{/logout}" method="post" class="inline m-0">
+                        <button type="submit" 
+                                class="inline-flex items-center gap-2 bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-600 px-5 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95 group">
+                            <span>Salir</span>
+                            <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </nav>
+    <main class="flex-grow">
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+            <div class="fade-in-up">
+                <div th:replace="~{:: content}"></div>
+            </div>
+        </div>
+    </main>
+    <div id="modalDetalle" class="hidden fixed inset-0 z-[100] w-full h-full overflow-y-auto">
+    
+    <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-md transition-opacity" onclick="cerrarModal()"></div>
+
+    <div class="flex min-h-full items-center justify-center">
+        
+        <div class="relative bg-white rounded-[2.5rem] shadow-2xl max-w-2xl w-full flex flex-col my-8 animate-in zoom-in-95 duration-300 overflow-hidden">
+            
+            <div class="bg-slate-900 p-6 md:p-8 flex justify-between items-center text-white sticky top-0 z-10">
+                <div class="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-white/5 to-transparent"></div>
+                <div>
+                    <h3 class="text-xl md:text-2xl font-black tracking-tight">Pedido <span id="modalIdPedido" class="text-blue-400"></span></h3>
+                    <p id="modalFecha" class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 mt-1"></p>
+                </div>
+            </div>
+
+            <div class="p-6 md:p-8 space-y-8 overflow-y-auto max-h-[60vh] bg-white">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-slate-50 p-6 rounded-3xl border border-slate-100">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Estado del Envío</span>
+                        <div id="modalEstado" class="inline-block px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-tighter shadow-sm border"></div>
+                    </div>
+                    <div class="bg-slate-50 p-6 rounded-3xl border border-slate-100">
+                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Cliente Asociado</span>
+                        <p id="modalCliente" class="text-sm font-black text-slate-900"></p>
+                        <p id="modalCorreo" class="text-xs font-bold text-blue-500"></p>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 ml-1 flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                        Resumen de Artículos
+                    </h4>
+                    <div id="modalProductos" class="space-y-3 px-1">
+                        </div>
+                </div>
+            </div>
+
+            <div class="p-6 md:p-8 bg-slate-50 border-t border-slate-200/60 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest text-center sm:text-left">Monto Total</p>
+                    <p id="modalTotal" class="text-3xl font-black text-slate-900 tracking-tight mt-1"></p>
+                </div>
+                <button onclick="cerrarModal()" class="w-full sm:w-auto bg-slate-900 text-white px-8 py-3 rounded-2xl font-black text-sm hover:bg-blue-600 transition-all active:scale-95 shadow-lg shadow-slate-200">
+                    Cerrar Detalle
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script th:src="@{/js/gestor.js}"></script>
+</html>

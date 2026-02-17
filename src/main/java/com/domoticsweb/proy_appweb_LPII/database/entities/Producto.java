@@ -2,6 +2,7 @@ package com.domoticsweb.proy_appweb_LPII.database.entities;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -57,8 +58,9 @@ public class Producto {
     @OneToOne(mappedBy = "producto", cascade = CascadeType.ALL)
     @JsonManagedReference
     private Inventario inventario;
-
+    
+    @Builder.Default
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    private List<ProductoImagen> imagenes;
+    private List<ProductoImagen> imagenes = new ArrayList<>();
 }

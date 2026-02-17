@@ -16,17 +16,19 @@ public class AdminDashboardRepository {
         this.jdbc = jdbc;
     }
 
+ // Total de dinero vendido (excluye cancelados)
     public BigDecimal totalVendido() {
         BigDecimal v = jdbc.queryForObject(
-                "SELECT COALESCE(SUM(total),0) FROM ventas WHERE estado='PAGADA'",
+                "SELECT COALESCE(SUM(total), 0) FROM ventas WHERE estado != 'CANCELADO'",
                 BigDecimal.class
         );
         return v == null ? BigDecimal.ZERO : v;
     }
 
+ // Cantidad total de ventas (sin canceladas)
     public int cantidadVentas() {
         Integer v = jdbc.queryForObject(
-                "SELECT COUNT(*) FROM ventas WHERE estado='PAGADA'",
+                "SELECT COUNT(*) FROM ventas WHERE estado != 'CANCELADO'",
                 Integer.class
         );
         return v == null ? 0 : v;
@@ -51,14 +53,17 @@ public class AdminDashboardRepository {
         """);
     }
 
-    public List<Map<String, Object>> ventasUltimos7Dias() {
+    public List<Map<String, Object>> ventasUltimos7DiasPorEstado() {
         return jdbc.queryForList("""
-            SELECT DATE(v.fechaVenta) AS dia, COALESCE(SUM(v.total),0) AS total
+            SELECT 
+                DATE(v.fechaVenta) AS dia,
+                v.estado,
+                COALESCE(SUM(v.total), 0) AS total
             FROM ventas v
-            WHERE v.estado='PAGADO'
+            WHERE v.estado != 'CANCELADO'
               AND v.fechaVenta >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
-            GROUP BY DATE(v.fechaVenta)
-            ORDER BY dia
+            GROUP BY DATE(v.fechaVenta), v.estado
+            ORDER BY dia, v.estado
         """);
     }
 }

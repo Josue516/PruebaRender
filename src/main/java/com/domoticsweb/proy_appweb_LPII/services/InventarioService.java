@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.domoticsweb.proy_appweb_LPII.database.entities.DetalleVenta;
 import com.domoticsweb.proy_appweb_LPII.database.entities.Inventario;
 import com.domoticsweb.proy_appweb_LPII.database.entities.Producto;
 import com.domoticsweb.proy_appweb_LPII.database.repositories.InventarioRepository;
@@ -33,12 +34,6 @@ public class InventarioService {
                 .orElseThrow(() -> new RuntimeException("Inventario no encontrado"));
     }
 
-    // Buscar inventario por producto
-    @Transactional(readOnly = true)
-    public Inventario buscarPorProducto(Long idProducto) {
-        return inventarioRepository.findByProducto_IdProducto(idProducto)
-                .orElseThrow(() -> new RuntimeException("Inventario no existe para ese producto"));
-    }
 
     // Crear inventario para un producto
     public Inventario crearInventario(Long idProducto, Integer stockInicial, Integer stockMinimo) {
@@ -51,7 +46,7 @@ public class InventarioService {
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
         // Evitar duplicar inventario para el mismo producto
-        inventarioRepository.findByProducto_IdProducto(idProducto)
+        inventarioRepository.findByProductoId(idProducto)
                 .ifPresent(i -> {
                     throw new RuntimeException("Ese producto ya tiene inventario registrado");
                 });
@@ -64,65 +59,71 @@ public class InventarioService {
 
         return inventarioRepository.save(inventario);
     }
-
-    // Aumentar stock
-    public Inventario aumentarStock(Long idProducto, Integer cantidad) {
-        if (cantidad <= 0) {
-            throw new RuntimeException("La cantidad debe ser mayor a cero");
+    @Transactional
+    public void reducirStock(Long idProducto, Integer cantidad) {
+        // Buscar el producto
+        Producto producto = productoRepository.findById(idProducto)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + idProducto));
+        
+        // Obtener el inventario del producto
+        Inventario inventario = producto.getInventario();
+        
+        if (inventario == null) {
+            throw new RuntimeException("El producto no tiene inventario asociado");
         }
-
-        Inventario inventario = buscarPorProducto(idProducto);
-        int stockAnterior = inventario.getStock();
-        inventario.setStock(stockAnterior + cantidad);
-
-        // Lógica de Reactivación:
-        // Si antes no había nada y ahora sí, ponemos el producto como activo
-        if (stockAnterior == 0 && inventario.getStock() > 0) {
-            Producto producto = inventario.getProducto();
-            if (!producto.getActivo()) { // Solo si estaba desactivado
-                producto.setActivo(true);
-                productoRepository.save(producto);
-            }
-        }
-
-        return inventarioRepository.save(inventario);
-    }
-
-    // Reducir stock
-    public Inventario reducirStock(Long idProducto, Integer cantidad) {
-        if (cantidad <= 0) {
-            throw new RuntimeException("La cantidad debe ser mayor a cero");
-        }
-
-        Inventario inventario = buscarPorProducto(idProducto);
-
+        
+        // Verificar que hay stock suficiente
         if (inventario.getStock() < cantidad) {
-            throw new RuntimeException("Stock insuficiente");
+            throw new RuntimeException("Stock insuficiente. Disponible: " + 
+                                     inventario.getStock() + ", Solicitado: " + cantidad);
         }
-
-        inventario.setStock(inventario.getStock() - cantidad);
-
-        // Lógica de Desactivación Automática:
-        if (inventario.getStock() == 0) {
-            Producto producto = inventario.getProducto();
+        
+        // Reducir el stock
+        int nuevoStock = inventario.getStock() - cantidad;
+        inventario.setStock(nuevoStock);
+        inventarioRepository.save(inventario);
+        
+        // SI EL STOCK LLEGA A 0, SUSPENDER EL PRODUCTO
+        if (nuevoStock == 0) {
             producto.setActivo(false);
             productoRepository.save(producto);
         }
-
-        return inventarioRepository.save(inventario);
+    }
+    //ESTE METODO PODRA SER USADO EN CASO DE DEVOLUCIONES
+    @Transactional
+    public void incrementarStock(Long idProducto, Integer cantidad) {
+        Producto producto = productoRepository.findById(idProducto)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + idProducto));
+        
+        Inventario inventario = producto.getInventario();
+        
+        if (inventario == null) {
+            throw new RuntimeException("El producto no tiene inventario asociado");
+        }
+        
+        inventario.setStock(inventario.getStock() + cantidad);
+        inventarioRepository.save(inventario);
+    }
+    public List<Inventario> listarTodos() {
+        return inventarioRepository.findAll();
     }
 
-    // Actualizar stock mínimo
-    public Inventario actualizarStockMinimo(Long idProducto, Integer nuevoStockMinimo) {
+    public List<Inventario> filtrarInventario(String nombre, Long idCategoria, String estado) {
+        return inventarioRepository.filtrarInventario(nombre, idCategoria, estado);
+    }
 
-        if (nuevoStockMinimo < 0) {
-            throw new RuntimeException("Stock mínimo no puede ser negativo");
+    public void actualizarStock(Long idInventario, Integer stock, Integer stockMinimo) {
+        Inventario inventario = inventarioRepository.findById(idInventario)
+                .orElseThrow(() -> new RuntimeException("Inventario no encontrado"));
+        
+        inventario.setStock(stock);
+        inventario.setStockMinimo(stockMinimo);
+        inventarioRepository.save(inventario);
+    }
+    @Transactional
+    public void restaurarStockVenta(List<DetalleVenta> detalles) {
+        for (DetalleVenta detalle : detalles) {
+            incrementarStock(detalle.getProducto().getIdProducto(), detalle.getCantidad());
         }
-
-        Inventario inventario = buscarPorProducto(idProducto);
-
-        inventario.setStockMinimo(nuevoStockMinimo);
-
-        return inventarioRepository.save(inventario);
     }
 }

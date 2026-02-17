@@ -2,21 +2,21 @@ package com.domoticsweb.proy_appweb_LPII.services;
 
 import com.domoticsweb.proy_appweb_LPII.database.entities.Usuario;
 import com.domoticsweb.proy_appweb_LPII.database.repositories.UsuarioRepository;
+
+import lombok.AllArgsConstructor;
+
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class UsuarioDetailsService implements UserDetailsService {
 
     private final UsuarioRepository usuarioRepository;
-
-    public UsuarioDetailsService(UsuarioRepository usuarioRepository) {
-        this.usuarioRepository = usuarioRepository;
-    }
-
     @Override
     public UserDetails loadUserByUsername(String input) throws UsernameNotFoundException {
 
@@ -34,5 +34,13 @@ public class UsuarioDetailsService implements UserDetailsService {
                 .authorities(authorities)
                 .disabled(!Boolean.TRUE.equals(u.getActivo()))
                 .build();
+    }
+    public List<Usuario> filtrarUsuarios(String nombre, Long idRol, Boolean activo) {
+        return usuarioRepository.filtrarUsuarios(nombre, idRol, activo);
+    }
+
+    public Usuario buscarPorId(Long id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
     }
 }

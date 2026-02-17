@@ -34,5 +34,4 @@ public class ProductoImagen {
     @JoinColumn(name = "idProducto", nullable = false)
     @JsonBackReference
     private Producto producto;
-    
 }

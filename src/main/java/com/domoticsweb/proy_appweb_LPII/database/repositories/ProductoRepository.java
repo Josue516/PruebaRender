@@ -3,6 +3,8 @@ package com.domoticsweb.proy_appweb_LPII.database.repositories;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.domoticsweb.proy_appweb_LPII.database.entities.Producto;
@@ -20,7 +22,13 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
     // PANEL ADMINISTRADOR 
     // Para el Panel de Administración (Opcional si quieres ver inactivos)
     List<Producto> findByCategoria_IdCategoria(Long idCategoria);
-    // El administrador necesita buscar por nombre incluso productos inactivos
-    List<Producto> findByNombreContainingIgnoreCase(String nombre); 
-    
+    @Query("SELECT p FROM Producto p WHERE " +
+    	       "(:nombre IS NULL OR LOWER(p.nombre) LIKE LOWER(CONCAT('%', :nombre, '%'))) AND " +
+    	       "(:idCategoria IS NULL OR p.categoria.idCategoria = :idCategoria) AND " +
+    	       "(:activo IS NULL OR p.activo = :activo)")
+    	List<Producto> filtrarProductos(
+    	    @Param("nombre") String nombre,
+    	    @Param("idCategoria") Long idCategoria,
+    	    @Param("activo") Boolean activo
+    	);
 }

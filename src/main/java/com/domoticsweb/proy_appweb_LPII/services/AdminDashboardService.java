@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +27,7 @@ public class AdminDashboardService {
 
         d.setNombreAdmin(capitalizar(username));
         d.setNombreTienda("IEoDomoTics");
-        d.setFotoUrl(null); // luego puedes poner /images/mary.jpg, etc.
+        d.setFotoUrl(null);
 
         BigDecimal total = ventaRepository.sumTotalVentasPagadas();
         int ventas = ventaRepository.countVentasPagadas();
@@ -38,19 +40,58 @@ public class AdminDashboardService {
         d.setTicketPromedio(ticket);
         d.setNotificacionesBajoStock(repo.notificacionesBajoStock());
 
-        List<Map<String, Object>> filas = repo.ventasUltimos7Dias();
-        List<String> labels = new ArrayList<>();
-        List<BigDecimal> serie = new ArrayList<>();
-
+        // ========== PROCESAR VENTAS POR ESTADO ==========
+        List<Map<String, Object>> filas = repo.ventasUltimos7DiasPorEstado();
+        
+        // Estructura: dia -> estado -> total
+        Map<String, Map<String, BigDecimal>> ventasPorDiaYEstado = new LinkedHashMap<>();
+        
         for (Map<String, Object> f : filas) {
-            labels.add(String.valueOf(f.get("dia")));
+            String dia = String.valueOf(f.get("dia"));
+            String estado = String.valueOf(f.get("estado"));
             Object t = f.get("total");
-            if (t instanceof BigDecimal bd) serie.add(bd);
-            else serie.add(new BigDecimal(String.valueOf(t)));
+            BigDecimal totalDia = (t instanceof BigDecimal bd) ? bd : new BigDecimal(String.valueOf(t));
+            
+            ventasPorDiaYEstado
+                .computeIfAbsent(dia, k -> new HashMap<>())
+                .put(estado, totalDia);
         }
-
+        
+        // Obtener todos los días únicos (labels)
+        List<String> labels = new ArrayList<>(ventasPorDiaYEstado.keySet());
+        
+        // Crear series para cada estado
+        List<BigDecimal> seriePagado = new ArrayList<>();
+        List<BigDecimal> serieEnPreparacion = new ArrayList<>();
+        List<BigDecimal> serieEnviado = new ArrayList<>();
+        List<BigDecimal> serieEntregado = new ArrayList<>();
+        
+        for (String dia : labels) {
+            Map<String, BigDecimal> estadosDia = ventasPorDiaYEstado.get(dia);
+            
+            seriePagado.add(estadosDia.getOrDefault("PAGADO", BigDecimal.ZERO));
+            serieEnPreparacion.add(estadosDia.getOrDefault("EN_PREPARACION", BigDecimal.ZERO));
+            serieEnviado.add(estadosDia.getOrDefault("ENVIADO", BigDecimal.ZERO));
+            serieEntregado.add(estadosDia.getOrDefault("ENTREGADO", BigDecimal.ZERO));
+        }
+        
+        // Calcular serie total (para mantener compatibilidad)
+        List<BigDecimal> serieTotal = new ArrayList<>();
+        for (int i = 0; i < labels.size(); i++) {
+            BigDecimal totalDelDia = seriePagado.get(i)
+                .add(serieEnPreparacion.get(i))
+                .add(serieEnviado.get(i))
+                .add(serieEntregado.get(i));
+            serieTotal.add(totalDelDia);
+        }
+        
         d.setLabelsVentas(labels);
-        d.setSerieVentas(serie);
+        d.setSerieVentas(serieTotal);
+        d.setSeriePagado(seriePagado);
+        d.setSerieEnPreparacion(serieEnPreparacion);
+        d.setSerieEnviado(serieEnviado);
+        d.setSerieEntregado(serieEntregado);
+        
         d.setTopProductos(repo.topProductos());
 
         return d;

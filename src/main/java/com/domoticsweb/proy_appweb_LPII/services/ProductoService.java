@@ -67,16 +67,19 @@ public class ProductoService {
     }
 
     // Actualizar producto
-    public Producto actualizarProducto(Long id, Producto productoActualizado) {
-
-        Producto producto = buscarPorId(id);
-
-        producto.setNombre(productoActualizado.getNombre());
-        producto.setDescripcion(productoActualizado.getDescripcion());
-        producto.setPrecio(productoActualizado.getPrecio());
-        producto.setCategoria(productoActualizado.getCategoria());
-
-        return productoRepository.save(producto);
+    public Producto actualizarProducto(Producto producto) {
+        // Verifica que el producto existe
+        Producto productoExistente = buscarPorId(producto.getIdProducto());
+        
+        // Actualiza solo los campos editables
+        productoExistente.setNombre(producto.getNombre());
+        productoExistente.setMarca(producto.getMarca());
+        productoExistente.setPrecio(producto.getPrecio());
+        productoExistente.setCategoria(producto.getCategoria());
+        productoExistente.setDescripcion(producto.getDescripcion());
+        
+        // Guarda y retorna
+        return productoRepository.save(productoExistente);
     }
 
     // Eliminación lógica
@@ -92,18 +95,25 @@ public class ProductoService {
     public List<Producto> listarPorCategoria(Long idCategoria) {
     	return productoRepository.findByCategoria_IdCategoriaAndActivoTrue(idCategoria);
     }
-
-    // Buscar por nombre
-    @Transactional(readOnly = true)
-    public List<Producto> buscarPorNombre(String nombre) {
-        return productoRepository.findByNombreContainingIgnoreCase(nombre);
-    }
     //PARA REDUCIR STOCK DE INVENTARIO
     @Transactional
     public void procesarVenta(VentaDTO venta) {
-        for (CarritoDTO item : venta.getItems()) {
-            inventarioService.reducirStock(item.getId(), item.getCantidad());
+        try {
+            for (CarritoDTO item : venta.getItems()) {
+                inventarioService.reducirStock(item.getId(), item.getCantidad());
+            }
+            System.out.println("Venta procesada exitosamente y stock actualizado");
+        } catch (RuntimeException e) {
+            System.err.println("Error al procesar venta: " + e.getMessage());
+            throw e; // Re-lanzar para que el @Transactional haga rollback
         }
-        System.out.println("Venta procesada y stock actualizado mediante InventarioService");
     }
+	public void suspender(Long id){
+    Producto p = productoRepository.findById(id).orElseThrow();
+    p.setActivo(!p.getActivo());
+    productoRepository.save(p);
+}
+	public List<Producto> filtrarProductos(String nombre, Long idCategoria, Boolean activo) {
+	    return productoRepository.filtrarProductos(nombre, idCategoria, activo);
+	}
 }

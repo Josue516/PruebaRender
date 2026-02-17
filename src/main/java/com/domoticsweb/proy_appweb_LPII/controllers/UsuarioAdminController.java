@@ -1,14 +1,12 @@
 package com.domoticsweb.proy_appweb_LPII.controllers;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.domoticsweb.proy_appweb_LPII.database.entities.Rol;
 import com.domoticsweb.proy_appweb_LPII.database.entities.Usuario;
@@ -97,14 +96,38 @@ public class UsuarioAdminController {
         return resultado;
     }
     @PostMapping("/suspender/{id}")
-    public String cambiarEstadoUsuario(@PathVariable Long id) {
+    public String cambiarEstadoUsuario(
+            @PathVariable Long id,
+            @RequestParam(required = false) String nombre,
+            @RequestParam(required = false) Long idRol,
+            @RequestParam(required = false) Boolean activo,
+            RedirectAttributes redirectAttributes,
+            Authentication auth) {
 
-        Usuario usuario = usuarioRepository.findById(id).orElseThrow();
+        // Verificar que no intente suspenderse a sí mismo
+        Usuario usuarioActual = usuarioRepository.findByNombreUsuarioIgnoreCase(auth.getName()).orElse(null);
+        
+        if (usuarioActual != null && usuarioActual.getIdUsuario().equals(id)) {
+            redirectAttributes.addFlashAttribute("error", "No puedes cambiar tu propio estado");
+            return "redirect:/admin/usuarios";
+        }
 
-        // Cambia el estado al contrario
+        // Cambiar estado del usuario
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         usuario.setActivo(!usuario.getActivo());
-
         usuarioRepository.save(usuario);
+
+        // Mantener filtros
+        if (nombre != null && !nombre.isBlank()) {
+            redirectAttributes.addAttribute("nombre", nombre);
+        }
+        if (idRol != null) {
+            redirectAttributes.addAttribute("idRol", idRol);
+        }
+        if (activo != null) {
+            redirectAttributes.addAttribute("activo", activo);
+        }
 
         return "redirect:/admin/usuarios";
     }
