@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Locale;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class AuthSuccessHandler implements AuthenticationSuccessHandler {
@@ -17,11 +19,21 @@ public class AuthSuccessHandler implements AuthenticationSuccessHandler {
                                         HttpServletResponse response,
                                         Authentication authentication) throws IOException {
 
-        boolean esAdmin = authentication.getAuthorities().stream()
+    	Set<String> roles = authentication.getAuthorities().stream()
                 .map(a -> a.getAuthority().trim().toUpperCase(Locale.ROOT))
-                .anyMatch("ROLE_ADMIN"::equals);
+                .collect(Collectors.toSet());
 
-        String destino = esAdmin ? "/admin/panel" : "/usuario/panel";
+        String destino;
+        
+        // Orden de prioridad: ADMIN > GESTOR > USUARIO
+        if (roles.contains("ROLE_ADMIN")) {
+            destino = "/admin/panel";
+        } else if (roles.contains("ROLE_GESTOR")) {
+            destino = "/gestor";
+        } else {
+            destino = "/usuario/panel";
+        }
+
         response.sendRedirect(request.getContextPath() + destino);
     }
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.domoticsweb.proy_appweb_LPII.database.entities.DetalleVenta;
 import com.domoticsweb.proy_appweb_LPII.database.entities.Inventario;
 import com.domoticsweb.proy_appweb_LPII.database.entities.Producto;
 import com.domoticsweb.proy_appweb_LPII.database.repositories.InventarioRepository;
@@ -118,5 +119,12 @@ public class InventarioService {
         inventario.setStock(stock);
         inventario.setStockMinimo(stockMinimo);
         inventarioRepository.save(inventario);
+
+    }
+    @Transactional
+    public void restaurarStockVenta(List<DetalleVenta> detalles) {
+        for (DetalleVenta detalle : detalles) {
+            incrementarStock(detalle.getProducto().getIdProducto(), detalle.getCantidad());
+        }
     }
 }

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es"
+      xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/gestor-layout :: layout}">
+<head>
+    <title>Gestión de Pedidos</title>
+</head>
+<body>
+<div th:fragment="content">
+    <div class="max-w-7xl mx-auto p-4 lg:p-8">
+        
+        <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
+            <div>
+                <h1 class="text-3xl font-black text-slate-900 tracking-tight">Gestión de Pedidos</h1>
+                <p class="text-slate-500 font-medium">Monitorea y actualiza el flujo de ventas en tiempo real</p>
+            </div>
+            <div class="bg-white px-4 py-2 rounded-2xl border border-slate-200 shadow-sm hidden md:block">
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-widest block">Hoy</span>
+                <span class="text-sm font-bold text-slate-700" th:text="${#calendars.format(#calendars.createNow(), 'dd MMMM, yyyy')}"></span>
+            </div>
+        </header>
+
+        <div th:if="${mensaje}" class="mb-8 animate-in slide-in-from-top duration-500">
+            <div class="bg-emerald-50 border border-emerald-100 p-4 rounded-2xl flex items-center gap-3">
+                <div class="bg-emerald-500 p-1.5 rounded-lg text-white">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                </div>
+                <span class="text-emerald-800 font-bold text-sm" th:text="${mensaje}"></span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <div class="group bg-white p-1 rounded-[2rem] border border-slate-200 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300">
+                <div class="bg-slate-50 rounded-[1.8rem] p-6 border border-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="bg-amber-100 text-amber-600 p-3 rounded-2xl group-hover:scale-110 transition-transform">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <span class="text-[10px] font-black text-amber-600 uppercase tracking-[0.2em] bg-amber-50 px-3 py-1 rounded-full">En espera</span>
+                    </div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Pendientes</p>
+                    <p class="text-4xl font-black text-slate-900 mt-1" th:text="${pendientes}">0</p>
+                </div>
+            </div>
+
+            <div class="group bg-white p-1 rounded-[2rem] border border-slate-200 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300">
+                <div class="bg-slate-50 rounded-[1.8rem] p-6 border border-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="bg-blue-100 text-blue-600 p-3 rounded-2xl group-hover:scale-110 transition-transform">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                        </div>
+                        <span class="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] bg-blue-50 px-3 py-1 rounded-full">Procesando</span>
+                    </div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Preparación</p>
+                    <p class="text-4xl font-black text-slate-900 mt-1" th:text="${enPreparacion}">0</p>
+                </div>
+            </div>
+
+            <div class="group bg-white p-1 rounded-[2rem] border border-slate-200 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300">
+                <div class="bg-slate-50 rounded-[1.8rem] p-6 border border-white">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="bg-emerald-100 text-emerald-600 p-3 rounded-2xl group-hover:scale-110 transition-transform">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                        <span class="text-[10px] font-black text-emerald-600 uppercase tracking-[0.2em] bg-emerald-50 px-3 py-1 rounded-full">En Camino</span>
+                    </div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Enviados</p>
+                    <p class="text-4xl font-black text-slate-900 mt-1" th:text="${enviados}">0</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-[2rem] border border-slate-200 shadow-sm p-8 mb-8 relative overflow-hidden">
+            <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-blue-50 rounded-full blur-3xl"></div>
+            
+            <h3 class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
+                <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+                Panel de Filtros
+            </h3>
+            
+            <form th:action="@{/gestor/pedidos}" method="get" class="space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-[11px] font-bold text-slate-500 uppercase ml-1 tracking-wider">Estado del Pedido</label>
+                        <select name="estado" class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm font-medium focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none">
+                            <option value="">Todos los estados</option>
+                            <option value="PAGADO" th:selected="${param.estado != null && param.estado[0] == 'PAGADO'}">PAGADO</option>
+                            <option value="EN_PREPARACION" th:selected="${param.estado != null && param.estado[0] == 'EN_PREPARACION'}">EN PREPARACIÓN</option>
+                            <option value="ENVIADO" th:selected="${param.estado != null && param.estado[0] == 'ENVIADO'}">ENVIADO</option>
+                            <option value="ENTREGADO" th:selected="${param.estado != null && param.estado[0] == 'ENTREGADO'}">ENTREGADO</option>
+                            <option value="CANCELADO" th:selected="${param.estado != null && param.estado[0] == 'CANCELADO'}">CANCELADO</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-[11px] font-bold text-slate-500 uppercase ml-1 tracking-wider">Identificación Cliente</label>
+                        <div class="relative">
+                            <input type="text" name="cliente" th:value="${param.cliente}" placeholder="Nombre o correo..." 
+                                   class="w-full bg-slate-50 border-slate-200 rounded-xl pl-11 pr-4 py-3 text-sm font-medium focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none">
+                            <svg class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-[11px] font-bold text-slate-500 uppercase ml-1 tracking-wider">Priorizar Por</label>
+                        <select name="orden" class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-3 text-sm font-medium focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none">
+                            <option value="fecha_desc" th:selected="${param.orden == null || param.orden[0] == 'fecha_desc'}">Fecha (Recientes primero)</option>
+                            <option value="fecha_asc" th:selected="${param.orden != null && param.orden[0] == 'fecha_asc'}">Fecha (Antiguos primero)</option>
+                            <option value="monto_desc" th:selected="${param.orden != null && param.orden[0] == 'monto_desc'}">Monto (Mayor a menor)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end pt-4 border-t border-slate-100">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Fecha Inicio</label>
+                        <input type="date" name="fechaDesde" th:value="${param.fechaDesde}" class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none transition-all">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Fecha Fin</label>
+                        <input type="date" name="fechaHasta" th:value="${param.fechaHasta}" class="w-full bg-slate-50 border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none transition-all">
+                    </div>
+                    
+                    <button type="submit" class="bg-slate-900 text-white font-bold text-sm py-3 rounded-xl hover:bg-blue-600 active:scale-95 transition-all shadow-lg shadow-slate-200 flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+                        Aplicar Filtros
+                    </button>
+                    
+                    <a th:href="@{/gestor/pedidos}" class="bg-slate-100 text-slate-500 font-bold text-sm py-3 rounded-xl hover:bg-slate-200 active:scale-95 transition-all text-center">
+                        Limpiar Búsqueda
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <div class="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden border-separate">
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50/50">
+                            <th class="px-6 py-5 text-left text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">ID Pedido</th>
+                            <th class="px-6 py-5 text-left text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Fecha / Hora</th>
+                            <th class="px-6 py-5 text-left text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Cliente</th>
+                            <th class="px-6 py-5 text-left text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Monto Total</th>
+                            <th class="px-6 py-5 text-left text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Estado</th>
+                            <th class="px-6 py-5 text-left text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Gestión de Flujo</th>
+                            <th class="px-6 py-5 text-center text-[11px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">Detalles</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        <tr th:if="${ventas == null || ventas.isEmpty()}">
+                            <td colspan="7" class="px-6 py-20 text-center">
+                                <div class="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <svg class="w-10 h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
+                                </div>
+                                <p class="text-slate-900 font-black">No hay resultados</p>
+                                <p class="text-slate-400 text-sm mt-1 font-medium">No se encontraron pedidos con los filtros aplicados.</p>
+                            </td>
+                        </tr>
+
+                        <tr th:each="venta : ${ventas}" class="hover:bg-slate-50/80 transition-all group">
+                            <td class="px-6 py-5">
+                                <span class="bg-slate-100 text-slate-900 text-[11px] font-black px-3 py-1.5 rounded-lg border border-slate-200" th:text="'#' + ${venta.idVenta}"></span>
+                            </td>
+                            <td class="px-6 py-5">
+                                <p class="text-sm font-bold text-slate-700" th:text="${#temporals.format(venta.fechaVenta, 'dd/MM/yyyy')}"></p>
+                                <p class="text-[10px] font-bold text-slate-400" th:text="${#temporals.format(venta.fechaVenta, 'HH:mm')}"></p>
+                            </td>
+                            <td class="px-6 py-5">
+                                <p class="text-sm font-black text-slate-900" th:text="${venta.usuario?.nombreUsuario ?: 'Invitado'}"></p>
+                                <p class="text-xs font-medium text-slate-400" th:text="${venta.usuario?.correo}"></p>
+                            </td>
+                            <td class="px-6 py-5">
+                                <span class="text-sm font-black text-slate-900" th:text="'$' + ${#numbers.formatDecimal(venta.total, 1, 2)}"></span>
+                            </td>
+                            <td class="px-6 py-5">
+                                <span th:with="statusClass=${
+                                    venta.estado == 'PAGADO' ? 'bg-amber-100 text-amber-700 border-amber-200' :
+                                    venta.estado == 'EN_PREPARACION' ? 'bg-blue-100 text-blue-700 border-blue-200' :
+                                    venta.estado == 'ENVIADO' ? 'bg-purple-100 text-purple-700 border-purple-200' :
+                                    venta.estado == 'ENTREGADO' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-red-100 text-red-700 border-red-200'}"
+                                    th:class="'text-[10px] font-black px-3 py-1.5 rounded-full border shadow-sm uppercase tracking-tighter ' + ${statusClass}"
+                                    th:text="${venta.estado.replace('_',' ')}">
+                                </span>
+                            </td>
+                            <td class="px-6 py-5">
+                                <form th:action="@{/gestor/pedidos/cambiar-estado/{id}(id=${venta.idVenta})}" method="post" class="flex items-center gap-2">
+                                    <input type="hidden" th:each="p : ${param}" th:name="${p.key}" th:value="${p.value[0]}">
+                                    
+                                    <div th:if="${venta.estado == 'ENTREGADO' || venta.estado == 'CANCELADO'}" class="flex items-center gap-1.5 text-slate-400">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
+                                        <span class="text-[10px] font-black uppercase tracking-tighter">Cerrado</span>
+                                    </div>
+
+                                    <div th:unless="${venta.estado == 'ENTREGADO' || venta.estado == 'CANCELADO'}" class="flex items-center gap-2">
+                                        <select name="nuevoEstado" class="text-xs font-bold bg-white border border-slate-200 rounded-lg pl-2 pr-8 py-1.5 focus:ring-2 focus:ring-blue-500/20 outline-none cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M7%207L10%2010L13%207%22%20stroke%3D%22%2394a3b8%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22/%3E%3C/svg%3E')] bg-[length:1.25rem] bg-[right_0.25rem_center] bg-no-repeat">
+                                            <option th:if="${venta.estado == 'PAGADO'}" value="PAGADO" selected>PAGADO</option>
+                                            <option th:if="${venta.estado == 'PAGADO'}" value="EN_PREPARACION">PREPARAR</option>
+                                            <option th:if="${venta.estado == 'PAGADO'}" value="CANCELADO">CANCELAR</option>
+                                            
+                                            <option th:if="${venta.estado == 'EN_PREPARACION'}" value="EN_PREPARACION" selected>EN PREPARACIÓN</option>
+                                            <option th:if="${venta.estado == 'EN_PREPARACION'}" value="ENVIADO">ENVIAR</option>
+                                            <option th:if="${venta.estado == 'EN_PREPARACION'}" value="CANCELADO">CANCELAR</option>
+                                            
+                                            <option th:if="${venta.estado == 'ENVIADO'}" value="ENVIADO" selected>ENVIADO</option>
+                                            <option th:if="${venta.estado == 'ENVIADO'}" value="ENTREGADO">ENTREGAR</option>
+                                        </select>
+                                        <button type="submit" class="bg-blue-600 text-white p-1.5 rounded-lg hover:bg-emerald-600 transition-colors shadow-sm active:scale-90">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                        </button>
+                                    </div>
+                                </form>
+                            </td>
+                            <td class="px-6 py-5 text-center">
+                                <button type="button" onclick="abrirModal(this)" th:attr="data-id=${venta.idVenta}"
+                                        class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all">
+                                    <svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0zM2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    </div>
+</body>
+</html>
