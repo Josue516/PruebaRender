@@ -119,6 +119,7 @@ public class InventarioService {
         inventario.setStock(stock);
         inventario.setStockMinimo(stockMinimo);
         inventarioRepository.save(inventario);
+
     }
     @Transactional
     public void restaurarStockVenta(List<DetalleVenta> detalles) {
