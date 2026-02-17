@@ -31,9 +31,6 @@ const debounce = (func, wait) => {
 
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => document.querySelectorAll(sel);
-
-// ==================== FILTROS ====================
-
 // ==================== NAVEGACIÓN ====================
 function toggleMenu() {
     if (!DOM.menuCategorias) return;
@@ -48,17 +45,11 @@ function filtrarAjax(event, element) {
     const idCategoria = element.dataset.id;
     const url = element.getAttribute('href');
 
-    if (window.innerWidth < 768 && DOM.menuCategorias && !DOM.menuCategorias.classList.contains('hidden')) {
-        DOM.menuCategorias.classList.add('hidden');
-        DOM.iconToggle?.classList.remove('rotate-180');
-        DOM.btnToggle?.setAttribute('aria-expanded', 'false');
-    }
-
-    categoriaSeleccionada = idCategoria; // ✅ actualizar categoría global
+    categoriaSeleccionada = idCategoria; // actualizar categoría global
     actualizarBotonesActivos(element);
     window.history.pushState({}, '', url);
 
-    aplicarFiltros(); // ✅ aplica filtros combinados
+    aplicarFiltros(); // aplica filtros combinados
 }
 
 
@@ -107,52 +98,6 @@ function aplicarFiltros() {
 
     renderizarCards(filtrados);
 }
-
-// ==================== INICIALIZACIÓN ====================
-document.addEventListener('DOMContentLoaded', async () => {
-    DOM.init();
-    actualizarContadores();
-
-    try {
-        // Cargar todos los productos
-        const response = await fetch('/api/productos');
-        todosLosProductos = await response.json();
-
-        // Detectar si Thymeleaf ya renderizó productos
-        const grid = DOM.gridProductos;
-        const articulosExistentes = grid ? grid.querySelectorAll('article') : [];
-
-        if (articulosExistentes.length > 0) {
-            // Agregar eventos a las cards existentes
-            agregarEventosACardsExistentes(articulosExistentes);
-        } else {
-            // Renderizar todos los productos desde JS
-            renderizarCards(todosLosProductos);
-        }
-
-        // ==================== FILTRO INICIAL SI HAY CATEGORÍA EN URL ====================
-        const params = new URLSearchParams(window.location.search);
-        const idCat = params.get('idCat');
-        if (idCat) {
-            categoriaSeleccionada = idCat;
-            const boton = $(`#filtro-nav a[data-id="${idCat}"]`);
-            if (boton) actualizarBotonesActivos(boton);
-            filtrarProductos();
-        }
-
-    } catch (error) {
-        console.error('Error al cargar productos:', error);
-        if (DOM.gridProductos) {
-            DOM.gridProductos.innerHTML = `
-                <div class="col-span-full py-16 text-center">
-                    <h3 class="text-xl font-bold text-red-500 mb-2">Error al cargar productos</h3>
-                    <button onclick="location.reload()" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700">Recargar</button>
-                </div>`;
-        }
-    }
-
-    DOM.cartOverlay?.addEventListener('click', toggleCart);
-});
 // ==================== RESET DE FILTROS ====================
 function resetearFiltros() {
     categoriaSeleccionada = 'todos';
@@ -604,13 +549,6 @@ function agregarEventosACardsExistentes(articles) {
 }
 
 // ==================== EVENTOS ====================
-window.addEventListener('resize', debounce(() => {
-    if (window.innerWidth >= 768) {
-        document.body.style.overflow = '';
-        DOM.menuCategorias?.classList.remove('hidden');
-    }
-}, 250));
-
 window.addEventListener('popstate', () => location.reload());
 
 document.addEventListener('keydown', (e) => {
@@ -645,10 +583,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (categoriaActiva) {
             categoriaSeleccionada = categoriaActiva.dataset.id;
         }
-
         // Renderizar según categoría seleccionada
         aplicarFiltros();
-
         // ==================== EVENTOS DE FILTRO EN INPUTS ====================
         $('#search-input')?.addEventListener('input', aplicarFiltros);
         $('#price-range')?.addEventListener('input', aplicarFiltros);
