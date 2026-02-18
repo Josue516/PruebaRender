@@ -1,5 +1,6 @@
 package com.domoticsweb.proy_appweb_LPII.services;
 
+import com.domoticsweb.proy_appweb_LPII.database.entities.EstadoVenta;
 import com.domoticsweb.proy_appweb_LPII.database.repositories.admin.AdminDashboardRepository;
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.*;
@@ -231,7 +232,9 @@ public class InformePDFService {
 
         for (Map<String, Object> venta : ventas) {
             String dia = venta.get("dia").toString();
-            String estado = venta.get("estado").toString();
+            EstadoVenta estado = EstadoVenta.valueOf(
+                    String.valueOf(venta.get("estado"))
+            );
             Object totalObj = venta.get("total");
             BigDecimal total = totalObj instanceof BigDecimal bd 
                 ? bd 
@@ -246,19 +249,21 @@ public class InformePDFService {
             tabla.addCell(celdaFecha);
 
             // Celda Estado con color
-            PdfPCell celdaEstado = new PdfPCell(new Phrase(estado, estadoFont));
+            PdfPCell celdaEstado = new PdfPCell(
+                    new Phrase(estado.name(), estadoFont)
+            );
             celdaEstado.setPadding(8);
             celdaEstado.setHorizontalAlignment(Element.ALIGN_CENTER);
             
             // Colorear según estado
-            if (estado.equals("PAGADO")) {
-                celdaEstado.setBackgroundColor(new Color(255, 243, 205)); // Amarillo claro
-            } else if (estado.equals("EN_PREPARACION")) {
-                celdaEstado.setBackgroundColor(new Color(207, 226, 243)); // Azul claro
-            } else if (estado.equals("ENVIADO")) {
-                celdaEstado.setBackgroundColor(new Color(225, 213, 231)); // Púrpura claro
-            } else if (estado.equals("ENTREGADO")) {
-                celdaEstado.setBackgroundColor(new Color(209, 236, 241)); // Verde claro
+            if (estado == EstadoVenta.PAGADO) {
+                celdaEstado.setBackgroundColor(new Color(255, 243, 205));
+            } else if (estado == EstadoVenta.EN_PREPARACION) {
+                celdaEstado.setBackgroundColor(new Color(207, 226, 243));
+            } else if (estado == EstadoVenta.DESPACHADO) {
+                celdaEstado.setBackgroundColor(new Color(225, 213, 231));
+            } else if (estado == EstadoVenta.ENTREGADO) {
+                celdaEstado.setBackgroundColor(new Color(209, 236, 241));
             }
             
             tabla.addCell(celdaEstado);

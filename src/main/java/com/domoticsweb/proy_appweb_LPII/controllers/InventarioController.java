@@ -2,6 +2,7 @@ package com.domoticsweb.proy_appweb_LPII.controllers;
 
 import java.util.List;
 
+import com.domoticsweb.proy_appweb_LPII.database.entities.EstadoVenta;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,12 +28,11 @@ public class InventarioController {
     public String listarInventario(
             @RequestParam(required = false) String nombre,
             @RequestParam(required = false) Long idCategoria,
-            @RequestParam(required = false) String estado,
+            @RequestParam(required = false) EstadoVenta estado,
             Model model) {
 
         // Normalizar parámetros vacíos a null
         nombre = (nombre != null && nombre.trim().isEmpty()) ? null : nombre;
-        estado = (estado != null && estado.trim().isEmpty()) ? null : estado;
 
         List<Inventario> inventarios;
 
@@ -57,7 +57,7 @@ public class InventarioController {
             @RequestParam Integer stockMinimo,
             @RequestParam(required = false) String nombre,
             @RequestParam(required = false) Long idCategoria,
-            @RequestParam(required = false) String estado,
+            @RequestParam(required = false) EstadoVenta estado,
             RedirectAttributes redirectAttributes) {
 
         inventarioService.actualizarStock(id, stock, stockMinimo);
@@ -69,7 +69,7 @@ public class InventarioController {
         if (idCategoria != null) {
             redirectAttributes.addAttribute("idCategoria", idCategoria);
         }
-        if (estado != null && !estado.isBlank()) {
+        if (estado != null) {
             redirectAttributes.addAttribute("estado", estado);
         }
 

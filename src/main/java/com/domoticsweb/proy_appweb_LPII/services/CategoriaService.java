@@ -42,17 +42,6 @@ public class CategoriaService {
         return categoriaRepository.save(categoria);
     }
 
-    // Actualizar
-    public Categoria actualizar(Long id, Categoria categoriaActualizada) {
-
-        Categoria categoria = buscarPorId(id);
-
-        categoria.setNombre(categoriaActualizada.getNombre());
-        categoria.setDescripcion(categoriaActualizada.getDescripcion());
-
-        return categoriaRepository.save(categoria);
-    }
-
     // Eliminación lógica
     public void desactivar(Long id) {
 

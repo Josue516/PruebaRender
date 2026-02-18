@@ -19,9 +19,7 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
     List<Producto> findByCategoria_IdCategoriaAndActivoTrue(Long idCategoria); 
 
     boolean existsByNombre(String nombre);
-    // PANEL ADMINISTRADOR 
-    // Para el Panel de Administración (Opcional si quieres ver inactivos)
-    List<Producto> findByCategoria_IdCategoria(Long idCategoria);
+
     @Query("SELECT p FROM Producto p WHERE " +
     	       "(:nombre IS NULL OR LOWER(p.nombre) LIKE LOWER(CONCAT('%', :nombre, '%'))) AND " +
     	       "(:idCategoria IS NULL OR p.categoria.idCategoria = :idCategoria) AND " +

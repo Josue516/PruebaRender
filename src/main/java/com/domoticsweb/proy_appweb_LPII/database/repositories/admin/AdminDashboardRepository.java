@@ -3,7 +3,6 @@ package com.domoticsweb.proy_appweb_LPII.database.repositories.admin;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -14,24 +13,6 @@ public class AdminDashboardRepository {
 
     public AdminDashboardRepository(JdbcTemplate jdbc) {
         this.jdbc = jdbc;
-    }
-
- // Total de dinero vendido (excluye cancelados)
-    public BigDecimal totalVendido() {
-        BigDecimal v = jdbc.queryForObject(
-                "SELECT COALESCE(SUM(total), 0) FROM ventas WHERE estado != 'CANCELADO'",
-                BigDecimal.class
-        );
-        return v == null ? BigDecimal.ZERO : v;
-    }
-
- // Cantidad total de ventas (sin canceladas)
-    public int cantidadVentas() {
-        Integer v = jdbc.queryForObject(
-                "SELECT COUNT(*) FROM ventas WHERE estado != 'CANCELADO'",
-                Integer.class
-        );
-        return v == null ? 0 : v;
     }
 
     public int notificacionesBajoStock() {

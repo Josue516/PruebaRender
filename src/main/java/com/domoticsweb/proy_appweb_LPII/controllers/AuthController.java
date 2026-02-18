@@ -2,6 +2,7 @@ package com.domoticsweb.proy_appweb_LPII.controllers;
 
 import java.util.List;
 
+import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -20,20 +21,13 @@ import com.domoticsweb.proy_appweb_LPII.database.entities.Venta;
 import com.domoticsweb.proy_appweb_LPII.database.repositories.UsuarioRepository;
 import com.domoticsweb.proy_appweb_LPII.database.repositories.VentaRepository;
 import com.domoticsweb.proy_appweb_LPII.dto.UsuarioDTO;
-
+@AllArgsConstructor
 @Controller
 public class AuthController {
 
 	private final UsuarioRepository usuarioRepository;
 	private final VentaRepository ventaRepository;
 	private final PasswordEncoder passwordEncoder;
-	
-	public AuthController(UsuarioRepository usuarioRepository, VentaRepository ventaRepository, PasswordEncoder passwordEncoder) {
-		this.usuarioRepository = usuarioRepository;
-		this.ventaRepository = ventaRepository;
-		this.passwordEncoder = passwordEncoder;
-	}
-	
 	
     @GetMapping("/login")
     public String login() {
@@ -101,7 +95,4 @@ public class AuthController {
 
         return "redirect:/usuario/panel";
     }
-
-
-
 }

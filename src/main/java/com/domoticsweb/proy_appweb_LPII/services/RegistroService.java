@@ -5,21 +5,17 @@ import com.domoticsweb.proy_appweb_LPII.database.entities.Usuario;
 import com.domoticsweb.proy_appweb_LPII.database.repositories.RolRepository;
 import com.domoticsweb.proy_appweb_LPII.database.repositories.UsuarioRepository;
 import com.domoticsweb.proy_appweb_LPII.dto.RegistroRequest;
+import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@AllArgsConstructor
 public class RegistroService {
 
     private final UsuarioRepository usuarioRepo;
     private final RolRepository rolRepo;
     private final PasswordEncoder passwordEncoder;
-
-    public RegistroService(UsuarioRepository usuarioRepo, RolRepository rolRepo, PasswordEncoder passwordEncoder) {
-        this.usuarioRepo = usuarioRepo;
-        this.rolRepo = rolRepo;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     public void registrarUsuario(RegistroRequest req) {
 
