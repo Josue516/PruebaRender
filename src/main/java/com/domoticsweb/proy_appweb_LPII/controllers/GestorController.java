@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.domoticsweb.proy_appweb_LPII.database.entities.EstadoVenta;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +44,7 @@ public class GestorController {
 
     @GetMapping("/pedidos")
     public String pedidos(
-        @RequestParam(required = false) String estado,
+        @RequestParam(required = false) EstadoVenta estado,
         @RequestParam(required = false) String cliente,
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaDesde,
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fechaHasta,
@@ -55,12 +56,18 @@ public class GestorController {
         LocalDateTime fechaHastaTime = (fechaHasta != null) ? fechaHasta.atTime(23, 59, 59) : null;
         
         // Estadísticas
-        model.addAttribute("pendientes", ventaRepository.countByEstado("PAGADO"));
-        model.addAttribute("enPreparacion", ventaRepository.countByEstado("EN_PREPARACION"));
-        model.addAttribute("enviados", ventaRepository.countByEstado("ENVIADO"));
+        model.addAttribute("pendientes",ventaRepository.countByEstado(EstadoVenta.PAGADO));
+        model.addAttribute("enPreparacion",ventaRepository.countByEstado(EstadoVenta.EN_PREPARACION));
+        model.addAttribute("enviados", ventaRepository.countByEstado(EstadoVenta.ENTREGADO));
 
         // Lista de pedidos (con todos los filtros)
         List<Venta> ventas = ventaRepository.filtrarPedidos(estado, cliente, fechaDesdeTime, fechaHastaTime, orden);
+        try {
+            ventas = ventaRepository.filtrarPedidos(estado, cliente, fechaDesdeTime, fechaHastaTime, orden);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ventas = List.of();
+        }
         model.addAttribute("ventas", ventas);
 
         return "gestor/pedidos";
@@ -69,8 +76,8 @@ public class GestorController {
     @PostMapping("/pedidos/cambiar-estado/{id}")
     public String cambiarEstadoPedido(
             @PathVariable Long id,
-            @RequestParam String nuevoEstado,
-            @RequestParam(required = false) String estado,
+            @RequestParam EstadoVenta nuevoEstado,
+            @RequestParam(required = false) EstadoVenta estado,
             @RequestParam(required = false) String cliente,
             @RequestParam(required = false) String fechaDesde,
             @RequestParam(required = false) String fechaHasta,
@@ -81,111 +88,113 @@ public class GestorController {
             Venta venta = ventaRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
 
-            String estadoAnterior = venta.getEstado();
+            EstadoVenta estadoAnterior = venta.getEstado();
 
-            // ========== VALIDACIÓN 1: Estados finales no pueden cambiar ==========
-            if (estadoAnterior.equals("ENTREGADO")) {
-                redirectAttributes.addFlashAttribute("error", 
-                    "❌ No se puede modificar un pedido que ya fue ENTREGADO");
+            // ===== VALIDACIÓN 1: Estados finales =====
+            if (estadoAnterior == EstadoVenta.ENTREGADO ||
+                    estadoAnterior == EstadoVenta.CANCELADO) {
+
+                redirectAttributes.addFlashAttribute("error",
+                        "No se puede modificar un pedido en estado " + estadoAnterior);
+
                 preservarFiltros(estado, cliente, fechaDesde, fechaHasta, orden, redirectAttributes);
                 return "redirect:/gestor/pedidos";
             }
 
-            if (estadoAnterior.equals("CANCELADO")) {
-                redirectAttributes.addFlashAttribute("error", 
-                    "❌ No se puede modificar un pedido CANCELADO");
-                preservarFiltros(estado, cliente, fechaDesde, fechaHasta, orden, redirectAttributes);
-                return "redirect:/gestor/pedidos";
-            }
-
-            // ========== VALIDACIÓN 2: No retroceder estados ==========
+            // ===== VALIDACIÓN 2: Flujo =====
             if (!puedeAvanzarA(estadoAnterior, nuevoEstado)) {
-                redirectAttributes.addFlashAttribute("error", 
-                    "❌ No se puede cambiar de " + estadoAnterior + " a " + nuevoEstado + 
-                    ". Solo se puede avanzar en el flujo o cancelar.");
+
+                redirectAttributes.addFlashAttribute("error",
+                        "No se puede cambiar de " + estadoAnterior + " a " + nuevoEstado +
+                                ". Solo se puede avanzar en el flujo o cancelar.");
+
                 preservarFiltros(estado, cliente, fechaDesde, fechaHasta, orden, redirectAttributes);
                 return "redirect:/gestor/pedidos";
             }
 
-            // ========== VALIDACIÓN 3: No cancelar si ya fue enviado o entregado ==========
-            if (nuevoEstado.equals("CANCELADO")) {
-                if (estadoAnterior.equals("ENVIADO") || estadoAnterior.equals("ENTREGADO")) {
-                    redirectAttributes.addFlashAttribute("error", 
-                        "❌ No se puede cancelar un pedido que ya fue enviado o entregado");
+            // ===== VALIDACIÓN 3: Cancelación =====
+            if (nuevoEstado == EstadoVenta.CANCELADO) {
+
+                if (estadoAnterior == EstadoVenta.DESPACHADO ||
+                        estadoAnterior == EstadoVenta.ENTREGADO) {
+
+                    redirectAttributes.addFlashAttribute("error",
+                            "No se puede cancelar un pedido que ya fue despachado o entregado");
+
                     preservarFiltros(estado, cliente, fechaDesde, fechaHasta, orden, redirectAttributes);
                     return "redirect:/gestor/pedidos";
                 }
-                
-                // ========== RESTAURAR STOCK AL CANCELAR ==========
+
                 inventarioService.restaurarStockVenta(venta.getDetalles());
             }
 
-            // ========== ACTUALIZAR ESTADO ==========
+            // ===== ACTUALIZAR =====
             venta.setEstado(nuevoEstado);
             ventaRepository.save(venta);
 
-            // Preservar filtros
             preservarFiltros(estado, cliente, fechaDesde, fechaHasta, orden, redirectAttributes);
 
-            // Mensaje de éxito
             String mensaje = "Estado del pedido #" + id + " actualizado";
-            if (nuevoEstado.equals("CANCELADO")) {
+
+            if (nuevoEstado == EstadoVenta.CANCELADO) {
                 mensaje += " (Stock restaurado)";
             }
-            
+
             redirectAttributes.addFlashAttribute("mensaje", mensaje);
-            
+
         } catch (RuntimeException e) {
-            redirectAttributes.addFlashAttribute("error", "❌ " + e.getMessage());
+
+            redirectAttributes.addFlashAttribute("error" + e.getMessage());
             preservarFiltros(estado, cliente, fechaDesde, fechaHasta, orden, redirectAttributes);
         }
 
         return "redirect:/gestor/pedidos";
     }
-    private boolean puedeAvanzarA(String estadoActual, String nuevoEstado) {
-        // Mismo estado = permitido (aunque no hace nada)
-        if (estadoActual.equals(nuevoEstado)) {
+    private boolean puedeAvanzarA(EstadoVenta actual, EstadoVenta nuevo) {
+        if (actual == nuevo) {
             return true;
         }
-        
-        switch (estadoActual) {
-            case "PAGADO":
-                return nuevoEstado.equals("EN_PREPARACION") || 
-                       nuevoEstado.equals("CANCELADO");
-                
-            case "EN_PREPARACION":
-                return nuevoEstado.equals("ENVIADO") || 
-                       nuevoEstado.equals("CANCELADO");
-                
-            case "ENVIADO":
-                return nuevoEstado.equals("ENTREGADO");
-                // NO puede cancelar desde ENVIADO
-                
-            case "ENTREGADO":
-            case "CANCELADO":
-                return false; // Estados finales, no pueden cambiar
-                
+        switch (actual) {
+            case PAGADO:
+                return nuevo == EstadoVenta.EN_PREPARACION ||
+                        nuevo == EstadoVenta.CANCELADO;
+            case EN_PREPARACION:
+                return nuevo == EstadoVenta.DESPACHADO ||
+                        nuevo == EstadoVenta.CANCELADO;
+            case DESPACHADO:
+                return nuevo == EstadoVenta.ENTREGADO;
+            case ENTREGADO:
+            case CANCELADO:
+                return false;
             default:
                 return false;
         }
     }
 
-    // Método auxiliar para no repetir código
-    private void preservarFiltros(String estado, String cliente, String fechaDesde, 
-                                   String fechaHasta, String orden, 
-                                   RedirectAttributes redirectAttributes) {
-        if (estado != null && !estado.isBlank()) {
+    private void preservarFiltros(
+            EstadoVenta estado,
+            String cliente,
+            String fechaDesde,
+            String fechaHasta,
+            String orden,
+            RedirectAttributes redirectAttributes) {
+
+        if (estado != null) {
             redirectAttributes.addAttribute("estado", estado);
         }
+
         if (cliente != null && !cliente.isBlank()) {
             redirectAttributes.addAttribute("cliente", cliente);
         }
+
         if (fechaDesde != null && !fechaDesde.isBlank()) {
             redirectAttributes.addAttribute("fechaDesde", fechaDesde);
         }
+
         if (fechaHasta != null && !fechaHasta.isBlank()) {
             redirectAttributes.addAttribute("fechaHasta", fechaHasta);
         }
+
         redirectAttributes.addAttribute("orden", orden);
     }
     @GetMapping("/pedidos/{id}/detalles")

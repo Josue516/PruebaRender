@@ -1,5 +1,6 @@
 package com.domoticsweb.proy_appweb_LPII.services;
 
+import com.domoticsweb.proy_appweb_LPII.database.entities.EstadoVenta;
 import com.domoticsweb.proy_appweb_LPII.database.repositories.VentaRepository;
 import com.domoticsweb.proy_appweb_LPII.database.repositories.admin.AdminDashboardRepository;
 import com.domoticsweb.proy_appweb_LPII.dto.admin.DashboardData;
@@ -9,11 +10,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -44,11 +41,11 @@ public class AdminDashboardService {
         List<Map<String, Object>> filas = repo.ventasUltimos7DiasPorEstado();
         
         // Estructura: dia -> estado -> total
-        Map<String, Map<String, BigDecimal>> ventasPorDiaYEstado = new LinkedHashMap<>();
+        Map<String, Map<EstadoVenta, BigDecimal>> ventasPorDiaYEstado = new LinkedHashMap<>();
         
         for (Map<String, Object> f : filas) {
             String dia = String.valueOf(f.get("dia"));
-            String estado = String.valueOf(f.get("estado"));
+            EstadoVenta estado = EstadoVenta.valueOf(String.valueOf(f.get("estado")));
             Object t = f.get("total");
             BigDecimal totalDia = (t instanceof BigDecimal bd) ? bd : new BigDecimal(String.valueOf(t));
             
@@ -65,14 +62,16 @@ public class AdminDashboardService {
         List<BigDecimal> serieEnPreparacion = new ArrayList<>();
         List<BigDecimal> serieEnviado = new ArrayList<>();
         List<BigDecimal> serieEntregado = new ArrayList<>();
-        
+
         for (String dia : labels) {
-            Map<String, BigDecimal> estadosDia = ventasPorDiaYEstado.get(dia);
-            
-            seriePagado.add(estadosDia.getOrDefault("PAGADO", BigDecimal.ZERO));
-            serieEnPreparacion.add(estadosDia.getOrDefault("EN_PREPARACION", BigDecimal.ZERO));
-            serieEnviado.add(estadosDia.getOrDefault("ENVIADO", BigDecimal.ZERO));
-            serieEntregado.add(estadosDia.getOrDefault("ENTREGADO", BigDecimal.ZERO));
+
+            Map<EstadoVenta, BigDecimal> estadosDia =
+                    ventasPorDiaYEstado.getOrDefault(dia, new EnumMap<>(EstadoVenta.class));
+
+            seriePagado.add(estadosDia.getOrDefault(EstadoVenta.PAGADO, BigDecimal.ZERO));
+            serieEnPreparacion.add(estadosDia.getOrDefault(EstadoVenta.EN_PREPARACION, BigDecimal.ZERO));
+            serieEnviado.add(estadosDia.getOrDefault(EstadoVenta.DESPACHADO, BigDecimal.ZERO));
+            serieEntregado.add(estadosDia.getOrDefault(EstadoVenta.ENTREGADO, BigDecimal.ZERO));
         }
         
         // Calcular serie total (para mantener compatibilidad)

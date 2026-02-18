@@ -1,5 +1,6 @@
 package com.domoticsweb.proy_appweb_LPII.controllers;
 
+import com.domoticsweb.proy_appweb_LPII.database.entities.*;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
@@ -8,10 +9,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import com.domoticsweb.proy_appweb_LPII.database.entities.DetalleVenta;
-import com.domoticsweb.proy_appweb_LPII.database.entities.Producto;
-import com.domoticsweb.proy_appweb_LPII.database.entities.Usuario;
-import com.domoticsweb.proy_appweb_LPII.database.entities.Venta;
 import com.domoticsweb.proy_appweb_LPII.database.repositories.DetalleVentaRepository;
 import com.domoticsweb.proy_appweb_LPII.database.repositories.ProductoRepository;
 import com.domoticsweb.proy_appweb_LPII.database.repositories.UsuarioRepository;
@@ -55,7 +52,7 @@ public class VentaController {
             Venta venta = new Venta();
             venta.setUsuario(usuario);
             venta.setFechaVenta(LocalDateTime.now());
-            venta.setEstado("PAGADO");
+            venta.setEstado(EstadoVenta.PAGADO);
             
             // Calculamos el total sumando (precio * cantidad) de cada CarritoDTO
             double total = compra.getItems().stream()

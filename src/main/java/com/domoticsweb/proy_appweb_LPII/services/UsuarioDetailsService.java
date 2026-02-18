@@ -9,7 +9,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,13 +33,5 @@ public class UsuarioDetailsService implements UserDetailsService {
                 .authorities(authorities)
                 .disabled(!Boolean.TRUE.equals(u.getActivo()))
                 .build();
-    }
-    public List<Usuario> filtrarUsuarios(String nombre, Long idRol, Boolean activo) {
-        return usuarioRepository.filtrarUsuarios(nombre, idRol, activo);
-    }
-
-    public Usuario buscarPorId(Long id) {
-        return usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
     }
 }

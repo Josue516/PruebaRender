@@ -2,6 +2,7 @@ package com.domoticsweb.proy_appweb_LPII.services;
 
 import java.util.List;
 
+import com.domoticsweb.proy_appweb_LPII.database.entities.EstadoVenta;
 import org.springframework.stereotype.Service;
 
 import com.domoticsweb.proy_appweb_LPII.database.entities.DetalleVenta;
@@ -108,7 +109,7 @@ public class InventarioService {
         return inventarioRepository.findAll();
     }
 
-    public List<Inventario> filtrarInventario(String nombre, Long idCategoria, String estado) {
+    public List<Inventario> filtrarInventario(String nombre, Long idCategoria, EstadoVenta estado) {
         return inventarioRepository.filtrarInventario(nombre, idCategoria, estado);
     }
 
