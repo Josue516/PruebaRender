@@ -18,7 +18,7 @@ public class DashboardData {
     private BigDecimal ticketPromedio;
 
     private int notificacionesBajoStock;
-
+    private List<Map<String, Object>> productosBajoStock;
     private List<String> labelsVentas;
     private List<BigDecimal> serieVentas;
     

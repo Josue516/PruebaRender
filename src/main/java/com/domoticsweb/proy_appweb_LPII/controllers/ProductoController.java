@@ -75,7 +75,7 @@ public class ProductoController {
         }
 
         model.addAttribute("productos", productos);
-        model.addAttribute("categorias", categoriaService.listarActivas());
+        model.addAttribute("categorias", categoriaService.listarTodas());
         model.addAttribute("nombreFiltro", nombre);
         model.addAttribute("categoriaSeleccionada", idCategoria);
         model.addAttribute("activoSeleccionado", activo);

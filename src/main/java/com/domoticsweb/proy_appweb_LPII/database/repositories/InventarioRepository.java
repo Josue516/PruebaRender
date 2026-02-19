@@ -3,7 +3,6 @@ package com.domoticsweb.proy_appweb_LPII.database.repositories;
 import java.util.List;
 import java.util.Optional;
 
-import com.domoticsweb.proy_appweb_LPII.database.entities.EstadoVenta;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -27,6 +26,6 @@ public interface InventarioRepository extends JpaRepository<Inventario, Long> {
      List<Inventario> filtrarInventario(
          @Param("nombre") String nombre,
          @Param("idCategoria") Long idCategoria,
-         @Param("estado") EstadoVenta estado
+         @Param("estado") String estado
      );
 }
