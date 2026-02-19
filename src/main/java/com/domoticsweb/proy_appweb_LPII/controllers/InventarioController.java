@@ -2,7 +2,6 @@ package com.domoticsweb.proy_appweb_LPII.controllers;
 
 import java.util.List;
 
-import com.domoticsweb.proy_appweb_LPII.database.entities.EstadoVenta;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.domoticsweb.proy_appweb_LPII.database.entities.Inventario;
+import com.domoticsweb.proy_appweb_LPII.database.entities.Producto;
+import com.domoticsweb.proy_appweb_LPII.database.repositories.ProductoRepository;
 import com.domoticsweb.proy_appweb_LPII.services.CategoriaService;
 import com.domoticsweb.proy_appweb_LPII.services.InventarioService;
 import lombok.RequiredArgsConstructor;
@@ -21,18 +22,19 @@ import lombok.RequiredArgsConstructor;
 public class InventarioController {
 
     private final InventarioService inventarioService;
-    
+    private final ProductoRepository productoRepo;
     private final CategoriaService categoriaService;
 
     @GetMapping("/admin/stock")
     public String listarInventario(
             @RequestParam(required = false) String nombre,
             @RequestParam(required = false) Long idCategoria,
-            @RequestParam(required = false) EstadoVenta estado,
+            @RequestParam(required = false) String estado,
             Model model) {
 
         // Normalizar parámetros vacíos a null
         nombre = (nombre != null && nombre.trim().isEmpty()) ? null : nombre;
+        estado = (estado != null && estado.trim().isEmpty()) ? null : estado;
 
         List<Inventario> inventarios;
 
@@ -43,7 +45,7 @@ public class InventarioController {
         }
 
         model.addAttribute("inventarios", inventarios);
-        model.addAttribute("categorias", categoriaService.listarActivas());
+        model.addAttribute("categorias", categoriaService.listarTodas());
         model.addAttribute("nombreFiltro", nombre);
         model.addAttribute("categoriaSeleccionada", idCategoria);
         model.addAttribute("estadoSeleccionado", estado);
@@ -57,11 +59,16 @@ public class InventarioController {
             @RequestParam Integer stockMinimo,
             @RequestParam(required = false) String nombre,
             @RequestParam(required = false) Long idCategoria,
-            @RequestParam(required = false) EstadoVenta estado,
+            @RequestParam(required = false) String estado,
             RedirectAttributes redirectAttributes) {
 
         inventarioService.actualizarStock(id, stock, stockMinimo);
-
+        Producto producto = productoRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado")); // Traer producto
+        if (stock == 0) {
+            producto.setActivo(false); // desactivar si stock 0
+        }
+        productoRepo.save(producto);
         // Mantener filtros
         if (nombre != null && !nombre.isBlank()) {
             redirectAttributes.addAttribute("nombre", nombre);

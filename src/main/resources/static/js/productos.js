@@ -145,7 +145,7 @@ function renderizarCards(lista) {
 
         const imagen = p.imagenes?.find(i => i.principal)?.urlImagen 
             || p.imagenes?.[0]?.urlImagen 
-            || '/img/placeholder.png';
+            || '';
 
         const img = clon.querySelector('.producto-img');
         const nombre = clon.querySelector('.producto-nombre');
@@ -235,7 +235,7 @@ function agregarAlCarrito(e, id, nombre, precio, imagen) {
         carrito.push({
             id, nombre,
             precio: parseFloat(precio),
-            imagen: imagen || '/img/placeholder.png',
+            imagen: imagen || '',
             cantidad: 1
         });
     }
@@ -307,7 +307,7 @@ function renderizarCarrito() {
         div.innerHTML = `
             <img src="${item.imagen}" alt="${item.nombre}" loading="lazy"
                  class="w-20 h-20 object-contain rounded-xl bg-gray-50 p-2 border border-gray-100"
-                 onerror="this.src='/img/placeholder.png'">
+                 onerror="this.src=''">
             <div class="flex-1 min-w-0">
                 <h4 class="text-sm font-bold text-slate-800 mb-1 line-clamp-2">${item.nombre}</h4>
                 <p class="text-xs text-slate-400 mb-3">S/ ${item.precio.toFixed(2)} c/u</p>
@@ -401,60 +401,72 @@ function renderizarBotonPaypal() {
 }
 
 function finalizarVentaBackend(orderId) {
-    fetch('/api/ventas/finalizar', { 
+    fetch('/api/ventas/finalizar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             orderId: orderId,
-            items: carrito.map(item => ({ 
-                id: item.id, 
-                cantidad: item.cantidad, 
-                precio: item.precio 
+            items: carrito.map(item => ({
+                id: item.id,
+                cantidad: item.cantidad,
+                precio: item.precio
             }))
         })
     })
-	.then(async response => {
-		const data = await response.json();
+    .then(async response => {
+        const data = await response.json();
 
-		   if (!response.ok) {
-		       throw new Error(
-		           data.error || data.mensaje || 'Error al procesar la venta'
-		       );
-		   }
+        if (!response.ok) {
+            // Lanzar error con el mensaje del backend
+            const mensaje = data.mensaje || data.error || 'Error al procesar la venta';
+            throw { message: mensaje, status: response.status };
+        }
 
-		   return data;
-	})
+        return data;
+    })
     .then(data => {
-        // --- 1. LIMPIEZA ---
+        // --- LIMPIEZA ---
         carrito = [];
         localStorage.removeItem('carrito');
         actualizarContadores();
         renderizarCarrito();
 
-        // --- 2. NOTIFICACIÓN CON BOTÓN ---
-        // Reemplazamos el alert/toast simple por la versión con botón de acción
-		const urlPedidos = new URL('/usuario/panel', window.location.origin);
-		urlPedidos.searchParams.set('tab', 'pedidos');
+        // --- NOTIFICACIÓN DE ÉXITO ---
+        const urlPedidos = new URL('/usuario/panel', window.location.origin);
+        urlPedidos.searchParams.set('tab', 'pedidos');
 
-		mostrarNotificacion(
-		    data.mensaje,
-		    urlPedidos.toString(),
-		    'Ver mis pedidos'
-		);
+        mostrarNotificacion(
+            data.mensaje || '✅ ¡Compra realizada con éxito!',
+            urlPedidos.toString(),
+            'Ver mis pedidos'
+        );
 
-        // --- 3. REDIRECCIÓN DE SEGURIDAD (OPCIONAL) ---
-        // Si el usuario no hace clic, lo llevamos suavemente a la tienda tras 8 segundos
-		setTimeout(() => {
-		    if (window.location.pathname.includes('/productos')) {
-		        window.location.href = '/usuario/panel?tab=pedidos';
-		    }
-		}, 8000);
+        // --- REDIRECCIÓN ---
+        setTimeout(() => {
+            if (window.location.pathname.includes('/productos')) {
+                window.location.href = '/usuario/panel?tab=pedidos';
+            }
+        }, 8000);
     })
-	.catch(err => {
-	    console.error("Error:", err);
+    .catch(err => {
 
-	    mostrarNotificacion('❌ ' + err.message); 
-	});
+        // Mostrar mensaje de error personalizado
+        let mensajeError = '';
+        
+        if (err.message) {
+            // Remover "Error:" del inicio si existe
+            mensajeError = err.message.replace(/^Error:\s*/i, '');
+        } else {
+            mensajeError = 'Ocurrió un error al procesar tu compra';
+        }
+
+        // Agregar emoji si no lo tiene
+        if (!mensajeError.startsWith('❌')) {
+            mensajeError = '❌ ' + mensajeError;
+        }
+
+        mostrarNotificacion(mensajeError);
+    });
 }
 
 // ==================== NOTIFICACIONES ====================
@@ -494,12 +506,30 @@ function mostrarNotificacion(mensaje, urlAccion = null, textoAccion = null) {
         toast.style.transform = 'translateX(0)';
     });
 
-    // Duración: Si tiene botón, 8 segundos. Si es simple, 2.5 segundos.
-    const duracion = urlAccion ? 8000 : 2500;
+    // Duración: Si tiene botón, 8 segundos. Si es simple, 4 segundos.
+    const duracion = urlAccion ? 8000 : 4000;
 
     notificationTimeout = setTimeout(() => {
-        toast.style.transform = 'translateX(600px)';
+		cerrarNotificacionConAnimacion(toast);
     }, duracion);
+}
+function cerrarNotificacionConAnimacion(notif) {
+    // Animación de salida (deslizar hacia la derecha y desvanecer)
+    notif.style.transform = 'translateX(400px)';
+    notif.style.opacity = '0';
+    
+    // Remover del DOM después de que termine la animación
+    setTimeout(() => {
+        if (notif.parentElement) {
+            notif.remove();
+        }
+    }, 500); // Tiempo de la animación (0.5s)
+}
+function cerrarNotificacion(boton) {
+    const notif = boton.closest('.fixed');
+    if (notif) {
+        cerrarNotificacionConAnimacion(notif);
+    }
 }
 
 // ==================== EVENTOS PARA CARDS RENDERIZADAS POR THYMELEAF ====================
@@ -509,7 +539,7 @@ function agregarEventosACardsExistentes(articles) {
         const nombre = card.querySelector('.producto-nombre')?.textContent || '';
         const precioText = card.querySelector('.producto-precio')?.textContent || 'S/ 0';
         const precio = parseFloat(precioText.replace('S/ ', '').replace(',', ''));
-        const imagen = card.querySelector('.producto-img')?.src || '/img/placeholder.png';
+        const imagen = card.querySelector('.producto-img')?.src || '';
         const marca = card.querySelector('.producto-marca')?.textContent || '';
         const categoria = card.querySelector('.producto-categoria')?.textContent || '';
         
@@ -574,7 +604,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.log('✓ Productos renderizados por servidor (Thymeleaf):', articulosExistentes.length);
             agregarEventosACardsExistentes(articulosExistentes);
         } else {
-            console.log('✓ Renderizando productos desde JavaScript');
             renderizarCards(todosLosProductos);
         }
 
@@ -596,5 +625,4 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
     DOM.cartOverlay?.addEventListener('click', toggleCart);
-    console.log('✓ Sistema cargado');
 });

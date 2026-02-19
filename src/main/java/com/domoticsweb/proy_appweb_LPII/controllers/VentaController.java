@@ -39,61 +39,89 @@ public class VentaController {
     @Transactional
     public ResponseEntity<?> finalizarCompra(@RequestBody VentaDTO compra, Authentication auth) {
         try {
-            // PARA VERIFICAR PAGO DE PAYPAL
+            // ========== VERIFICAR PAGO DE PAYPAL ==========
             if (!payPalService.verificarPago(compra.getOrderId())) {
                 return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED)
                         .body(Map.of("error", "El pago no fue verificado"));
             }
-            // Identificar al usuario
+            
+            // ========== IDENTIFICAR AL USUARIO ==========
             Usuario usuario = usuarioRepository.findByNombreUsuarioIgnoreCase(auth.getName())
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + auth.getName()));
 
-            // Crear cabecera de la Venta
+            // ========== VALIDAR STOCK ANTES DE PROCESAR ==========
+            for (CarritoDTO item : compra.getItems()) {
+                Producto producto = productoRepository.findById(item.getId())
+                        .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+                
+                Inventario inventario = producto.getInventario();
+                
+                // Validar que haya stock suficiente
+                if (inventario.getStock() < item.getCantidad()) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body(Map.of(
+                                "error", "Stock insuficiente",
+                                "mensaje", "El producto: '" + producto.getNombre() + "' tiene " +
+                                          "Disponible: " + inventario.getStock() + ", " +
+                                          "Solicitado: " + item.getCantidad()));}}
+
+            // ========== CREAR VENTA ==========
             Venta venta = new Venta();
             venta.setUsuario(usuario);
             venta.setFechaVenta(LocalDateTime.now());
             venta.setEstado(EstadoVenta.PAGADO);
-            
-            // Calculamos el total sumando (precio * cantidad) de cada CarritoDTO
+
+            // Calcular total
             double total = compra.getItems().stream()
                     .mapToDouble(item -> item.getPrecio() * item.getCantidad())
                     .sum();
             venta.setTotal(total);
-            
+
             Venta nuevaVenta = ventaRepository.save(venta);
 
-            // Convertimos cada CarritoDTO en una entidad DetalleVenta
+            // ========== CREAR DETALLES DE VENTA ==========
             List<DetalleVenta> detalles = compra.getItems().stream().map((CarritoDTO item) -> {
-                
-                // Buscamos el producto real en la DB usando el ID del DTO
                 Producto producto = productoRepository.findById(item.getId())
                         .orElseThrow(() -> new RuntimeException("Producto ID " + item.getId() + " no existe"));
 
                 DetalleVenta detalle = new DetalleVenta();
                 detalle.setVenta(nuevaVenta);
                 detalle.setProducto(producto);
-                detalle.setCantidad(item.getCantidad()); // Uso de CarritoDTO
-                detalle.setPrecioUnitario(item.getPrecio()); // Uso de CarritoDTO
+                detalle.setCantidad(item.getCantidad());
+                detalle.setPrecioUnitario(item.getPrecio());
                 detalle.setSubtotal(item.getPrecio() * item.getCantidad());
-                
+
                 return detalle;
             }).collect(Collectors.toList());
 
-            // Guardado masivo
             detalleVentaRepository.saveAll(detalles);
-            
+
+            // ========== REDUCIR STOCK ==========
             for (CarritoDTO item : compra.getItems()) {
                 inventarioService.reducirStock(item.getId(), item.getCantidad());
             }
-            
+
             return ResponseEntity.ok(Map.of(
                 "idVenta", nuevaVenta.getIdVenta(),
-                "mensaje", "Venta realizada con éxito"
+                "mensaje", "✅ ¡Compra realizada con éxito! Tu pedido ha sido confirmado."
             ));
 
+        } catch (RuntimeException e) {
+            // Capturar errores específicos de stock del InventarioService
+            String errorMsg = e.getMessage();
+            // Error genérico de RuntimeException
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of(
+                        "error", "Error al procesar la compra",
+                        "mensaje", errorMsg
+                    ));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError()
-                    .body(Map.of("error", e.getMessage()));
+            // Error inesperado
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                        "error", "Error inesperado",
+                        "mensaje", "Ocurrió un error al procesar tu compra. Por favor, intenta nuevamente."
+                    ));
         }
     }
     @GetMapping("/check-auth")

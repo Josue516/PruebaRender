@@ -36,6 +36,7 @@ public class AdminDashboardService {
         d.setCantidadVentas(ventas);
         d.setTicketPromedio(ticket);
         d.setNotificacionesBajoStock(repo.notificacionesBajoStock());
+        d.setProductosBajoStock(repo.productosBajoStock());
 
         // ========== PROCESAR VENTAS POR ESTADO ==========
         List<Map<String, Object>> filas = repo.ventasUltimos7DiasPorEstado();

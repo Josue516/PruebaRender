@@ -25,7 +25,7 @@ public class ProductoService {
     // Listar productos
     @Transactional(readOnly = true)
     public List<Producto> listarTodos() {
-    	return productoRepository.findByActivoTrue();
+    	return productoRepository.findByCategoria_ActivoTrue();
     }
 
     // Buscar por ID
@@ -102,7 +102,6 @@ public class ProductoService {
             for (CarritoDTO item : venta.getItems()) {
                 inventarioService.reducirStock(item.getId(), item.getCantidad());
             }
-            System.out.println("Venta procesada exitosamente y stock actualizado");
         } catch (RuntimeException e) {
             System.err.println("Error al procesar venta: " + e.getMessage());
             throw e; // Re-lanzar para que el @Transactional haga rollback
@@ -116,4 +115,5 @@ public class ProductoService {
 	public List<Producto> filtrarProductos(String nombre, Long idCategoria, Boolean activo) {
 	    return productoRepository.filtrarProductos(nombre, idCategoria, activo);
 	}
+	
 }

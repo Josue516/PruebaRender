@@ -12,8 +12,7 @@ import com.domoticsweb.proy_appweb_LPII.database.entities.Producto;
 @Repository
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
     
-    // Carga inicial de la tienda si esta activo
-    List<Producto> findByActivoTrue();  
+
 
     // Filtro por categoría desde el Sidebar 
     List<Producto> findByCategoria_IdCategoriaAndActivoTrue(Long idCategoria); 
@@ -29,4 +28,5 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
     	    @Param("idCategoria") Long idCategoria,
     	    @Param("activo") Boolean activo
     	);
+    List<Producto> findByCategoria_ActivoTrue();
 }

@@ -31,25 +31,63 @@
 				<!-- Menú -->
 				<nav class="space-y-2">
 					<a href="/admin/panel"
-						class="block px-4 py-3 rounded-xl bg-blue-600 font-semibold">📊
-						Dashboard</a> <a href="/admin/usuarios"
-						class="block px-4 py-3 rounded-xl hover:bg-slate-800 transition">👥
-						Usuarios</a><a href="/admin/categorias"
-						class="block px-4 py-3 rounded-xl hover:bg-slate-800 transition">🗂️
-						Categorías</a> <a href="/admin/productos"
-						class="block px-4 py-3 rounded-xl hover:bg-slate-800 transition">📦
-						Productos</a> <a href="/admin/stock"
-						class="block px-4 py-3 rounded-xl hover:bg-slate-800 transition">📦
-						Stock</a>
-				</nav>
+						class="group flex items-center gap-3 px-4 py-3.5 rounded-2xl bg-blue-600 text-white font-bold text-sm shadow-lg shadow-blue-600/20 transition-all duration-300">
+						<svg class="w-5 h-5 text-blue-100" fill="none"
+							stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+								stroke-width="2"
+								d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg> <span>Dashboard</span>
+					</a> <a href="/admin/usuarios"
+						class="group flex items-center gap-3 px-4 py-3.5 rounded-2xl text-slate-400 hover:text-white hover:bg-white/5 font-bold text-sm transition-all duration-200">
+						<svg class="w-5 h-5 opacity-60 group-hover:opacity-100"
+							fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+								stroke-width="2"
+								d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg> <span>Usuarios</span>
+					</a><a href="/admin/categorias"
+						class="group flex items-center gap-3 px-4 py-3.5 rounded-2xl text-slate-400 hover:text-white hover:bg-white/5 font-bold text-sm transition-all duration-200">
+						<svg class="w-5 h-5 opacity-60 group-hover:opacity-100"
+							fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+								stroke-width="2"
+								d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg> <span>Categorías</span>
+					</a><a href="/admin/productos"
+						class="group flex items-center gap-3 px-4 py-3.5 rounded-2xl text-slate-400 hover:text-white hover:bg-white/5 font-bold text-sm transition-all duration-200">
+						<svg class="w-5 h-5 opacity-60 group-hover:opacity-100"
+							fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+								stroke-width="2"
+								d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg> <span>Productos</span>
+					</a><a href="/admin/stock"
+						class="group flex items-center gap-3 px-4 py-3.5 rounded-2xl text-slate-400 hover:text-white hover:bg-white/5 font-bold text-sm transition-all duration-200">
+						<svg class="w-5 h-5 opacity-60 group-hover:opacity-100"
+							fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round"
+								stroke-width="2"
+								d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+            </svg> <span>Gestión Stock</span>
+					</a>
 
-				<div class="mt-8 pt-4 border-t border-slate-700">
-					<form th:action="@{/logout}" method="post">
-						<button
-							class="w-full bg-red-600 hover:bg-red-700 rounded-xl py-3 font-semibold">Cerrar
-							sesión</button>
-					</form>
-				</div>
+					<div class="mt-auto pt-6 border-t border-slate-800">
+						<form th:action="@{/logout}" method="post">
+							<button
+								class="w-full group flex items-center justify-center gap-3 bg-slate-800 hover:bg-red-500/10 text-slate-400 hover:text-red-500 rounded-2xl py-4 transition-all duration-300">
+								<svg
+									class="w-5 h-5 transition-transform group-hover:-translate-x-1"
+									fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+										stroke-width="2"
+										d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+								<span class="text-xs font-black uppercase tracking-[0.2em]">Cerrar
+									Sesión</span>
+							</button>
+						</form>
+					</div>
 			</aside>
 
 			<!-- CONTENIDO -->
@@ -57,21 +95,111 @@
 
 				<!-- Header superior del dashboard -->
 				<div
-					class="bg-white rounded-2xl p-5 shadow-sm flex items-center justify-between">
+					class="bg-white rounded-[1.5rem] p-7 shadow-sm border border-slate-100 flex items-center justify-between">
 					<div>
-						<h1 class="text-3xl font-bold text-slate-900">Dashboard</h1>
-						<p class="text-slate-600">
-							Bienvenido <span class="font-semibold"
-								th:text="${data.nombreAdmin}">Mary</span>
+						<h1 class="text-3xl font-black text-slate-900 tracking-tight">Dashboard</h1>
+						<p class="text-2xl text-slate-500 mt-1">
+							Hola <span class="font-bold text-blue-600"
+								th:text="${data.nombreAdmin}">Mary</span>, un gusto tenerte de
+							vuelta.
 						</p>
 					</div>
 				</div>
+				<!-- ============== ALERTAS DE STOCK BAJO ============== -->
+				<div
+					th:if="${data.productosBajoStock != null && !data.productosBajoStock.isEmpty()}"
+					class="bg-white border border-red-100 rounded-[1.5rem] p-6 shadow-sm">
+
+					<div class="flex items-center justify-between mb-5 px-1">
+						<div class="flex items-center gap-3">
+							<div
+								class="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center text-red-600 border border-red-100">
+								<svg class="w-6 h-6" fill="none" stroke="currentColor"
+									viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round"
+										stroke-width="2.5"
+										d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+							</div>
+							<div>
+								<h3
+									class="text-sm font-black text-slate-900 uppercase tracking-tight">Atención
+									de Inventario</h3>
+								<p class="text-xs text-slate-500">
+									Hay <span class="font-bold text-red-600"
+										th:text="${data.notificacionesBajoStock}">0</span> productos
+									con stock bajo
+								</p>
+							</div>
+						</div>
+						<a th:if="${data.productosBajoStock.size() > 4}"
+							th:href="@{/admin/stock?nombre=&idCategoria=&estado=bajo}"
+							class="text-[10px] font-black uppercase tracking-widest text-blue-600 hover:underline">Ver todos →</a>
+					</div>
+
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+						<div th:each="prod, iterStat : ${data.productosBajoStock}"
+							th:if="${iterStat.index < 4}"
+							class="group flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-transparent hover:border-red-100 hover:bg-white transition-all duration-300">
+
+							<div class="truncate mr-3">
+								<p class="text-sm font-bold text-slate-800 truncate mb-2"
+									th:text="${prod.nombre}">Producto</p>
+
+								<div class="flex items-center gap-3">
+									<div class="text-[11px] font-bold">
+										<span class="text-red-600">Actual: <span
+											th:text="${prod.stock}">0</span></span> <span
+											class="text-slate-400 mx-1">/</span> <span
+											class="text-slate-500">Mín: <span
+											th:text="${prod.stockMinimo}">10</span></span>
+									</div>
+
+									<span th:if="${prod.stock == 0}"
+										class="px-2 py-0.5 bg-red-600 text-white text-[9px] font-black rounded-md animate-pulse uppercase">Agotado</span>
+									<span th:if="${prod.stock > 0}"
+										class="px-2 py-0.5 bg-orange-500 text-white text-[9px] font-black rounded-md uppercase">Crítico</span>
+								</div>
+							</div>
+
+							<a th:href="@{/admin/stock(nombre=${prod.nombre})}"
+								class="flex-shrink-0 w-10 h-10 bg-white text-slate-400 hover:text-blue-600 rounded-xl border border-slate-200 hover:shadow-md transition-all flex items-center justify-center group-hover:border-blue-200">
+								<svg class="w-5 h-5" fill="none" stroke="currentColor"
+									viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round"
+										stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
+							</a>
+						</div>
+					</div>
+				</div>
+
+				<!-- Mensaje positivo cuando todo está bien -->
+				<div
+					th:if="${data.productosBajoStock != null && data.productosBajoStock.isEmpty()}"
+					class="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 rounded-lg p-4 shadow-sm">
+					<div class="flex items-center gap-3">
+						<svg class="w-6 h-6 text-green-600" fill="currentColor"
+							viewBox="0 0 20 20">
+            <path fill-rule="evenodd"
+								d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+								clip-rule="evenodd" />
+        </svg>
+						<div>
+							<p class="font-semibold text-green-900">Stock en orden</p>
+							<p class="text-sm text-green-700">Todos los productos tienen
+								stock suficiente</p>
+						</div>
+					</div>
+				</div>
 				<div class="mb-4 flex justify-end">
-    			<a th:href="@{/admin/informe/ventas-7-dias}" 
-      			class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition shadow-md">
-        		<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            	<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-        		</svg>Descargar Informe PDF</a>
+					<a th:href="@{/admin/informe/ventas-7-dias}"
+						class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition shadow-md">
+						<svg class="w-5 h-5" fill="none" stroke="currentColor"
+							viewBox="0 0 24 24">
+            	<path stroke-linecap="round" stroke-linejoin="round"
+								stroke-width="2"
+								d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        		</svg>Descargar Informe PDF
+					</a>
 				</div>
 				<!-- Métricas -->
 				<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -129,130 +257,12 @@
 
 	<!-- Chart.js -->
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script th:inline="javascript">
-    const labels = /*[[${data.labelsVentas}]]*/ [];
-    const seriePagado = /*[[${data.seriePagado}]]*/ [];
-    const serieEnPreparacion = /*[[${data.serieEnPreparacion}]]*/ [];
-    const serieEnviado = /*[[${data.serieEnviado}]]*/ [];
-    const serieEntregado = /*[[${data.serieEntregado}]]*/ [];
-
-    const ctx = document.getElementById('chartVentas');
-    if (ctx) {
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Pagado',
-                        data: seriePagado,
-                        borderColor: 'rgb(255, 205, 86)',
-                        backgroundColor: 'rgba(255, 205, 86, 0.1)',
-                        tension: 0.35,
-                        fill: true,
-                        borderWidth: 2,
-                        pointRadius: 4,
-                        pointHoverRadius: 6
-                    },
-                    {
-                        label: 'En Preparación',
-                        data: serieEnPreparacion,
-                        borderColor: 'rgb(54, 162, 235)',
-                        backgroundColor: 'rgba(54, 162, 235, 0.1)',
-                        tension: 0.35,
-                        fill: true,
-                        borderWidth: 2,
-                        pointRadius: 4,
-                        pointHoverRadius: 6
-                    },
-                    {
-                        label: 'Enviado',
-                        data: serieEnviado,
-                        borderColor: 'rgb(153, 102, 255)',
-                        backgroundColor: 'rgba(153, 102, 255, 0.1)',
-                        tension: 0.35,
-                        fill: true,
-                        borderWidth: 2,
-                        pointRadius: 4,
-                        pointHoverRadius: 6
-                    },
-                    {
-                        label: 'Entregado',
-                        data: serieEntregado,
-                        borderColor: 'rgb(75, 192, 192)',
-                        backgroundColor: 'rgba(75, 192, 192, 0.1)',
-                        tension: 0.35,
-                        fill: true,
-                        borderWidth: 2,
-                        pointRadius: 4,
-                        pointHoverRadius: 6
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                interaction: {
-                    mode: 'index',
-                    intersect: false,
-                },
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'top',
-                        labels: {
-                            usePointStyle: true,
-                            padding: 15,
-                            font: {
-                                size: 12,
-                                weight: 'bold'
-                            }
-                        }
-                    },
-                    tooltip: {
-                        enabled: true,
-                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                        padding: 12,
-                        titleFont: {
-                            size: 14,
-                            weight: 'bold'
-                        },
-                        bodyFont: {
-                            size: 13
-                        },
-                        callbacks: {
-                            label: function(context) {
-                                let label = context.dataset.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-                                label += 'S/ ' + context.parsed.y.toFixed(2);
-                                return label;
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return 'S/ ' + value.toFixed(0);
-                            }
-                        },
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.05)'
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false
-                        }
-                    }
-                }
-            }
-        });
-    }
-</script>
+	<script th:inline="javascript">
+		const labels = /*[[${data.labelsVentas}]]*/[];
+		const seriePagado = /*[[${data.seriePagado}]]*/[];
+		const serieEnPreparacion = /*[[${data.serieEnPreparacion}]]*/[];
+		const serieEnviado = /*[[${data.serieEnviado}]]*/[];
+		const serieEntregado = /*[[${data.serieEntregado}]]*/[];
+	</script>
 </div>
 </html>

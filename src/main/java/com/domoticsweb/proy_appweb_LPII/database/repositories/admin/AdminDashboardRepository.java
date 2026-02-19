@@ -22,6 +22,21 @@ public class AdminDashboardRepository {
         );
         return v == null ? 0 : v;
     }
+ // NUEVO MÉTODO - Obtener detalles de productos con stock bajo
+    public List<Map<String, Object>> productosBajoStock() {
+        return jdbc.queryForList("""
+            SELECT 
+                p.idProducto,
+                p.nombre,
+                i.stock,
+                i.stockMinimo,
+                (i.stockMinimo - i.stock) AS diferencia
+            FROM productos p
+            INNER JOIN inventario i ON p.idProducto = i.idProducto
+            WHERE i.stock <= i.stockMinimo
+            ORDER BY i.stock ASC, p.nombre
+        """);
+    }
 
     public List<Map<String, Object>> topProductos() {
         return jdbc.queryForList("""
