@@ -25,6 +25,12 @@ public class Usuario {
     @Column(name = "correo", nullable = false, unique = true, length = 120)
     private String correo;
 
+    @Column(name = "direccion", nullable = true, length = 250)
+    private String direccion;
+    
+    @Column(name = "numero", nullable = true, length = 15)
+    private String numero;
+    
     @Column(name = "contrasenaHash", nullable = false, length = 255)
     private String contrasenaHash;
 

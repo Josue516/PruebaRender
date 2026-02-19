@@ -51,6 +51,9 @@ public class AuthController {
         UsuarioDTO usuarioForm = new UsuarioDTO();
         usuarioForm.setNombreUsuario(user.getNombreUsuario());
         usuarioForm.setCorreo(user.getCorreo());
+        usuarioForm.setDireccion(user.getDireccion());
+        usuarioForm.setNumero(user.getNumero());
+        
 
         model.addAttribute("user", user);
         model.addAttribute("usuarioForm", usuarioForm);
@@ -74,6 +77,8 @@ public class AuthController {
 
         user.setNombreUsuario(form.getNombreUsuario());
         user.setCorreo(form.getCorreo());
+        user.setDireccion(form.getDireccion());
+        user.setNumero(form.getNumero());
 
         if (form.getNuevaContrasena() != null && !form.getNuevaContrasena().isBlank()) {
             String hash = passwordEncoder.encode(form.getNuevaContrasena());

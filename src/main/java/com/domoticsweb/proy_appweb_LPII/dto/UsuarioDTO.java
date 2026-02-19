@@ -9,5 +9,6 @@ public class UsuarioDTO {
 	private String nombreUsuario;
     private String correo;
     private String nuevaContrasena;
-    
+    private String direccion;
+    private String numero;
 }

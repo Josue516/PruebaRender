@@ -32,6 +32,8 @@ public class RegistroService {
         u.setNombreUsuario(req.getNombreUsuario());
         u.setCorreo(req.getCorreo());
         u.setContrasenaHash(passwordEncoder.encode(req.getContrasena()));
+        u.setDireccion(req.getDireccion());
+        u.setNumero(req.getNumero());
         u.setActivo(true);
         u.getRoles().add(rolUsuario);
 
