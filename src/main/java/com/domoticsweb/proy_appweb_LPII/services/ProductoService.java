@@ -25,7 +25,7 @@ public class ProductoService {
     // Listar productos
     @Transactional(readOnly = true)
     public List<Producto> listarTodos() {
-    	return productoRepository.findByCategoria_ActivoTrue();
+    	return productoRepository.findByActivoTrueAndCategoria_ActivoTrue();
     }
 
     // Buscar por ID

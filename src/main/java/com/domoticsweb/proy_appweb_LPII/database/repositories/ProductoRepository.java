@@ -28,5 +28,5 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
     	    @Param("idCategoria") Long idCategoria,
     	    @Param("activo") Boolean activo
     	);
-    List<Producto> findByCategoria_ActivoTrue();
+    List<Producto> findByActivoTrueAndCategoria_ActivoTrue();
 }
