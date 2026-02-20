@@ -64,6 +64,14 @@ public class VentaController {
                                 "mensaje", "El producto: '" + producto.getNombre() + "' tiene " +
                                           "Disponible: " + inventario.getStock() + ", " +
                                           "Solicitado: " + item.getCantidad()));}}
+            if (usuario.getDireccion() == null || usuario.getDireccion().isBlank() ||
+            	    usuario.getNumero() == null || usuario.getNumero().isBlank()) {
+
+            	    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            	            .body(Map.of(
+            	                "code", "DATOS_ENVIO_INCOMPLETOS",
+            	                "mensaje", "Debes completar tu dirección y teléfono antes de realizar la compra."));
+            	}
 
             // ========== CREAR VENTA ==========
             Venta venta = new Venta();
