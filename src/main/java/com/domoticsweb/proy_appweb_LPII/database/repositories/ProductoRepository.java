@@ -15,7 +15,7 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
 
 
     // Filtro por categoría desde el Sidebar 
-    List<Producto> findByCategoria_IdCategoriaAndActivoTrue(Long idCategoria); 
+	List<Producto> findByCategoria_IdCategoriaAndActivoTrueAndCategoria_ActivoTrue(Long idCategoria);
 
     boolean existsByNombre(String nombre);
 

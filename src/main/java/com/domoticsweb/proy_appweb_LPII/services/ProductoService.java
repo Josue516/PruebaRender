@@ -93,7 +93,7 @@ public class ProductoService {
     // Listar por categoría
     @Transactional(readOnly = true)
     public List<Producto> listarPorCategoria(Long idCategoria) {
-    	return productoRepository.findByCategoria_IdCategoriaAndActivoTrue(idCategoria);
+    	return productoRepository.findByCategoria_IdCategoriaAndActivoTrueAndCategoria_ActivoTrue(idCategoria);
     }
     //PARA REDUCIR STOCK DE INVENTARIO
     @Transactional
